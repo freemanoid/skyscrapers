@@ -4,16 +4,16 @@ File_1=SourceModule,'c:\program files\borland\delphi7\source\rtl\Win\Windows.pas
 File_2=SourceModule,'c:\program files\borland\delphi7\source\vcl\Graphics.pas',0,1,2308,1,2316,0,0
 
 [Modules]
-Module0=C:\repo\field.pas
+Module0=Z:\college\oaip\coursework\repo\field.pas
 Count=1
 EditWindowCount=1
 
-[C:\repo\field.pas]
+[Z:\college\oaip\coursework\repo\field.pas]
 ModuleType=SourceModule
 FormState=1
 FormOnTop=0
 
-[Z:\college\oaip\coursework\repo\ProjectGroup1.bpg]
+[C:\Program Files\Borland\Delphi7\Projects\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
@@ -30,31 +30,49 @@ MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=230
-Top=115
+Left=211
+Top=151
 Width=971
-Height=598
+Height=494
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=963
-ClientHeight=564
+ClientHeight=460
 LeftPanelSize=0
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D6573736167655669657700000000000000000000000000000000000100000000000000000B0000004D65737361676556696577FFFFFFFF
+BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
 
 [View0]
-Module=C:\repo\field.pas
-CursorX=41
-CursorY=39
-TopLine=22
+Module=Z:\college\oaip\coursework\repo\field.pas
+CursorX=1
+CursorY=20
+TopLine=1
 LeftCol=1
 
 [Watches]
 Count=0
+
+[WatchWindow]
+WatchColumnWidth=100
+WatchShowColumnHeaders=1
+Create=1
+Visible=0
+State=0
+Left=153
+Top=545
+Width=426
+Height=176
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=418
+ClientHeight=150
+TBDockHeight=157
+LRDockWidth=426
+Dockable=1
 
 [Breakpoints]
 Count=0
@@ -65,14 +83,16 @@ Count=0
 [Main Window]
 Create=1
 Visible=1
-State=0
+State=2
 Left=0
 Top=0
 Width=1432
 Height=112
-MaxLeft=-1
-MaxTop=-1
-ClientWidth=1424
+MaxLeft=-4
+MaxTop=-4
+MaxWidth=1440
+MaxHeight=112
+ClientWidth=1432
 ClientHeight=78
 
 [ProjectManager]
@@ -91,6 +111,23 @@ TBDockHeight=305
 LRDockWidth=438
 Dockable=1
 
+[CPUWindow]
+Create=1
+Visible=0
+State=0
+Left=119
+Top=103
+Width=1193
+Height=576
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1185
+ClientHeight=542
+DumpPane=79
+DisassemblyPane=187
+RegisterPane=231
+FlagPane=64
+
 [AlignmentPalette]
 Create=1
 Visible=0
@@ -108,36 +145,36 @@ ClientHeight=60
 Create=1
 Visible=1
 State=0
-Left=0
-Top=368
+Left=2
+Top=131
 Width=190
-Height=383
+Height=623
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=182
-ClientHeight=357
-TBDockHeight=383
+ClientHeight=597
+TBDockHeight=367
 LRDockWidth=190
 Dockable=1
 SplitPos=85
 ArrangeBy=Name
-SelectedItem=OnCreate
+SelectedItem=Caption
 ExpandedItems=
 HiddenCategories=
 
 [ObjectTree]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=0
 Top=112
 Width=190
-Height=254
+Height=248
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=182
-ClientHeight=228
-TBDockHeight=254
+ClientHeight=222
+TBDockHeight=248
 LRDockWidth=190
 Dockable=1
 
@@ -145,8 +182,8 @@ Dockable=1
 Create=1
 Visible=0
 State=0
-Left=0
-Top=-8
+Left=-2
+Top=-4
 Width=140
 Height=305
 MaxLeft=-1
@@ -161,13 +198,13 @@ Dockable=1
 Create=1
 Visible=0
 State=0
-Left=12
-Top=0
-Width=951
+Left=-8
+Top=-519
+Width=443
 Height=85
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=951
+ClientWidth=443
 ClientHeight=85
 TBDockHeight=85
 LRDockWidth=443

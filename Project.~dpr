@@ -2,7 +2,7 @@ program Project;
 
 uses
   Forms,
-  field in 'Z:\college\oaip\coursework\repo\field.pas' {Form1};
+  field in 'field.pas' {Form1};
 
 {$R *.res}
 
