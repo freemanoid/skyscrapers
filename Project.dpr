@@ -2,12 +2,12 @@ program Project;
 
 uses
   Forms,
-  field in 'field.pas' {Form1};
+  field in 'field.pas' {FieldForm};
 
 {$R *.res}
 
 begin
   Application.Initialize;
-  Application.CreateForm(TForm1, Form1);
+  Application.CreateForm(TFieldForm, FieldForm);
   Application.Run;
 end.

@@ -1,4 +1,4 @@
-object Form1: TForm1
+object FieldForm: TFieldForm
   Left = 195
   Top = 121
   Width = 893
@@ -31,5 +31,6 @@ object Form1: TForm1
     MinValue = 3
     TabOrder = 0
     Value = 3
+    OnChange = FieldSizeSpinEditChange
   end
 end
