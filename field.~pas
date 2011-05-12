@@ -7,20 +7,27 @@ uses
   Dialogs, ExtCtrls, StdCtrls, Spin;
 
 const
-  UnitWidth = 81;
-  UnitHeight = 81;
-  FloorIncrement = 5;
-  DistanceBeetwenUnits = 9;
-  DefaultFieldSize = 3;
-  TopLeftFieldBorder: TPoint = (X: 150; Y: 50);
-  BorderWidth = 50;
-  BorderFontName: String = 'Comic Sans MS';
-  BorderFontSize = 18;
-  BorderFontStyle = fsBold;
+  _UnitWidth = 81;
+  _UnitHeight = 81;
+  _FloorIncrement = 5;
+  _DistanceBeetwenUnits = 9;
+  _DefaultFieldSize = 3;
+  _BorderWidth = 50;
+  _TopLeftFieldBorder: TPoint = (X: 150; Y: 50);
+  _BorderFontName: String = 'Comic Sans MS';
+  _BorderFontSize = 18;
+  _BorderFontStyle = fsBold;
+  _VisibilityUnitBackgroundColor = clInactiveCaptionText;
+  visLeft = 1;
+  visRight = 2;
+  visTop = 3;
+  visBot = 4;
   
 type
   TImageArray = array[0..5, 0..5] of TImage;
-  TVisibilityArray = array[0..5] of byte;
+  TUnitsArray = array[0..5, 0..5] of shortint;
+  TVisibilityLabelArray = array[1..4] of array[0..5] of TLabel;
+  TVisibilityArray = array[1..4] of array[0..5] of byte;
   TFieldForm = class(TForm)
     FieldSizeSpinEdit: TSpinEdit;
     FieldSizeLabel: TLabel;
@@ -29,13 +36,18 @@ type
     procedure DrawEmptyField (DeleteOldImages: boolean);
     procedure FieldSizeSpinEditChange(Sender: TObject);
     procedure DeleteUnit (Row, Col: byte);
-    procedure DrawBorder;
+    procedure DrawVisibilityBorder (DeleteOldUnits: boolean);
+    procedure DrawVisibilityBorderUnit (UnitSide: byte; UnitIndex: byte);
+    procedure DeleteVisibilityUnit (UnitSide, UnitIndex: byte);
+    procedure UnitClick(Sender: TObject);
   private
     { Private declarations }
   public
     ImageArray: TImageArray;
+    UnitsArray: TUnitsArray;
     FieldSize: byte;
-    TopVisibilityArray, LeftVisibilityArray, RightVisibilityArray, BottomVisibilityArray: TVisibilityArray;
+    VisibilityLabelArray: TVisibilityLabelArray;
+    VisibilityArray: TVisibilityArray;
   end;
 var
   FieldForm: TFieldForm;
@@ -46,37 +58,90 @@ implementation
 
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: byte);
 begin
-  ImageArray[Row, Col].Free;
+  UnitsArray[Row, Col]:= UnitNumber;
+  DeleteUnit (Row, Col);
   ImageArray[Row, Col]:= TImage.Create (FieldForm);
   with ImageArray[Row, Col] do
   begin
+    Tag:= Row * 10 + Col;//we use tag field to connect ImageArray and UnitsArray
     Parent:= FieldForm;
-    Left:= TopLeftFieldBorder.X + BorderWidth + (UnitWidth + DistanceBeetwenUnits) * Row;
-    Top:= TopLeftFieldBorder.Y + BorderWidth + (UnitHeight + DistanceBeetwenUnits) * Col - FloorIncrement * UnitNumber;
+    Left:= _TopLeftFieldBorder.X + _BorderWidth +
+          (_UnitWidth + _DistanceBeetwenUnits) * Row;
+    Top:= _TopLeftFieldBorder.Y + _BorderWidth +
+         (_UnitHeight + _DistanceBeetwenUnits) * Col - _FloorIncrement * UnitNumber;
     Picture.LoadFromFile('images\' + IntToStr (UnitNumber) + '.bmp'); //UnitNumber must be in 0-6
   end;
 end;
 
-procedure TFieldForm.DrawBorder;
+procedure TFieldForm.DrawVisibilityBorderUnit (UnitSide: byte; UnitIndex: byte);
 var
   itr: byte;
 begin
-  with Canvas do
-    for itr:= 0 to FieldSize - 1 do  
+  DeleteVisibilityUnit (UnitSide, UnitIndex);
+  VisibilityLabelArray[UnitSide][UnitIndex]:= TLabel.Create(FieldForm);
+  with VisibilityLabelArray[UnitSide][UnitIndex] do
+  begin
+    Color:= _VisibilityUnitBackgroundColor;
+    Parent:= FieldForm;
+    Font.Size:= _BorderFontSize;
+    Font.Name:= _BorderFontName;
+    Font.Style:= [_BorderFontStyle];
+    Caption:= IntToStr (VisibilityArray[UnitSide][UnitIndex]);
+    case UnitSide of
+    visLeft:
     begin
-      TextOut (TopLeftFieldBorder.X + BorderWidth div 2, 
-              TopLeftFieldBorder.Y + BorderWidth + UnitHeight div 2 + (UnitHeight + DistanceBeetwenUnits) * itr, 
-              IntToStr (LeftVisibilityArray[itr])); //left border
-      TextOut (TopLeftFieldBorder.X + (BorderWidth * 3 div 2) + (UnitWidth + DistanceBeetwenUnits) * FieldSize,
-              TopLeftFieldBorder.Y + BorderWidth + UnitHeight div 2 + (UnitHeight + DistanceBeetwenUnits) * itr,
-              IntToStr (RightVisibilityArray[itr])); //right border
-      TextOut (TopLeftFieldBorder.X + BorderWidth + UnitWidth div 2 + (UnitHeight + DistanceBeetwenUnits) * itr,
-              TopLeftFieldBorder.Y + BorderWidth div 2,
-              IntToStr (TopVisibilityArray[itr])); //top border
-      TextOut (TopLeftFieldBorder.X + BorderWidth + UnitWidth div 2 + (UnitHeight + DistanceBeetwenUnits) * itr,
-              TopLeftFieldBorder.Y + (BorderWidth * 3 div 2) + (UnitWidth + DistanceBeetwenUnits) * FieldSize, 
-              IntToStr (BottomVisibilityArray[itr])); //bottom border
-    end;  
+      Left:= _TopLeftFieldBorder.X + _BorderWidth div 2;
+      Top:= _TopLeftFieldBorder.Y + _BorderWidth +
+            (_UnitHeight + _DistanceBeetwenUnits) * UnitIndex;  
+    end;
+    visRight:
+    begin
+      Left:= _TopLeftFieldBorder.X + _BorderWidth + 
+            (_UnitWidth + _DistanceBeetwenUnits) * FieldSize - _DistanceBeetwenUnits;
+      Top:= _TopLeftFieldBorder.Y + _BorderWidth +
+            (_UnitHeight + _DistanceBeetwenUnits) * UnitIndex;  
+    end;
+    visTop:
+    begin
+      Left:= _TopLeftFieldBorder.X + _BorderWidth + _UnitWidth div 3 +
+            (_UnitWidth + _DistanceBeetwenUnits) * UnitIndex - _DistanceBeetwenUnits;
+      Top:= _TopLeftFieldBorder.Y - _FloorIncrement * FieldSize;  
+    end;
+    visBot:
+    begin
+      Left:= _TopLeftFieldBorder.X + _BorderWidth + _UnitWidth div 3 +
+            (_UnitWidth + _DistanceBeetwenUnits) * UnitIndex - _DistanceBeetwenUnits;
+      Top:= _TopLeftFieldBorder.Y + _BorderWidth + 
+            (_UnitWidth + _DistanceBeetwenUnits) * FieldSize;  
+    end;
+    end;
+  end;  
+end;
+
+procedure TFieldForm.DeleteVisibilityUnit (UnitSide, UnitIndex: byte);
+begin
+  FreeAndNil (VisibilityLabelArray[UnitSide][UnitIndex]);  
+end;
+
+procedure TFieldForm.DrawVisibilityBorder (DeleteOldUnits: boolean);
+var
+  itr: byte;
+begin
+  if DeleteOldUnits then
+    for itr:= 0 to FieldSize do
+    begin
+      DeleteVisibilityUnit (visLeft, itr);
+      DeleteVisibilityUnit (visRight, itr);
+      DeleteVisibilityUnit (visTop, itr);
+      DeleteVisibilityUnit (visBot, itr);
+    end;
+  for itr:= 0 to FieldSize - 1 do
+  begin
+    DrawVisibilityBorderUnit (visLeft, itr);
+    DrawVisibilityBorderUnit (visRight, itr);
+    DrawVisibilityBorderUnit (visTop, itr);
+    DrawVisibilityBorderUnit (visBot, itr);
+  end; 
 end;
 
 procedure TFieldForm.DeleteUnit (Row, Col: byte);
@@ -104,13 +169,9 @@ var
   itrRow, itrCol: smallint;
 begin
   //variables initializate
-  FieldSize:= DefaultFieldSize;
-  Canvas.Font.Size:= BorderFontSize;
-  Canvas.Font.Name:= BorderFontName;
-  Canvas.Font.Style:= [BorderFontStyle];
-  DrawBorder;
+  FieldSize:= _DefaultFieldSize;
+  DrawVisibilityBorder (false);
   DrawEmptyField (false);
-  
 end;
 
 procedure TFieldForm.FieldSizeSpinEditChange(Sender: TObject);
@@ -118,15 +179,37 @@ begin
   if FieldSizeSpinEdit.Value < FieldSize then
   begin
     FieldSize:= FieldSizeSpinEdit.Value;
+    DrawVisibilityBorder (true);
     DrawEmptyField (true);
   end
   else
   begin
     FieldSize:= FieldSizeSpinEdit.Value; 
+    DrawVisibilityBorder (false);
     DrawEmptyField (false);
   end;
-  DrawBorder;
 end; 
+
+function TFieldForm.GetRowFromTag (Tag: integer): integer;
+begin
+  GetRowFromTag:= Tag div 10;
+end;
+
+function TFieldForm.GetColFromTag (Tag: integer): integer;
+begin
+  GetColFromTag:= Tag mod 10;
+end;
+
+procedure TFieldForm.UnitClick(Sender: TObject);
+var
+  Row, Col: byte;
+begin
+  if Sender is TImage then
+    with Sender as TImage do
+    begin
+      DrawUnit (GetRowFromTag (Sender as TImage))
+    end;
+end;
 
 initialization
 

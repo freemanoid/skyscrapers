@@ -15,15 +15,15 @@ object FieldForm: TFieldForm
   PixelsPerInch = 96
   TextHeight = 13
   object FieldSizeLabel: TLabel
-    Left = 10
-    Top = 25
+    Left = 15
+    Top = 30
     Width = 86
     Height = 13
     Caption = #1056#1072#1079#1084#1077#1088' '#1087#1086#1083#1103': '
   end
   object FieldSizeSpinEdit: TSpinEdit
-    Left = 10
-    Top = 45
+    Left = 15
+    Top = 50
     Width = 76
     Height = 22
     EditorEnabled = False
