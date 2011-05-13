@@ -40,6 +40,8 @@ type
     procedure DrawVisibilityBorderUnit (UnitSide: byte; UnitIndex: byte);
     procedure DeleteVisibilityUnit (UnitSide, UnitIndex: byte);
     procedure UnitClick(Sender: TObject);
+    function GetRowFromTag (Tag: integer): integer;
+    function GetColFromTag (Tag: integer): integer;
   private
     { Private declarations }
   public
@@ -56,13 +58,25 @@ implementation
 
 {$R *.dfm}
 
+procedure TFieldForm.FormCreate(Sender: TObject);
+var
+  itrRow, itrCol: smallint;
+begin
+  //variables initializate
+  FieldSize:= _DefaultFieldSize;
+  DrawEmptyField (false);
+  DrawVisibilityBorder (false);
+end;
+
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: byte);
 begin
   UnitsArray[Row, Col]:= UnitNumber;
-  DeleteUnit (Row, Col);
-  ImageArray[Row, Col]:= TImage.Create (FieldForm);
+  //DeleteUnit (Row, Col);
+  if ImageArray[Row, Col] = nil then
+    ImageArray[Row, Col]:= TImage.Create (FieldForm);
   with ImageArray[Row, Col] do
   begin
+    OnClick:= UnitClick;
     Tag:= Row * 10 + Col;//we use tag field to connect ImageArray and UnitsArray
     Parent:= FieldForm;
     Left:= _TopLeftFieldBorder.X + _BorderWidth +
@@ -71,6 +85,26 @@ begin
          (_UnitHeight + _DistanceBeetwenUnits) * Col - _FloorIncrement * UnitNumber;
     Picture.LoadFromFile('images\' + IntToStr (UnitNumber) + '.bmp'); //UnitNumber must be in 0-6
   end;
+end;
+
+procedure TFieldForm.DeleteUnit (Row, Col: byte);
+begin
+    FreeAndNil (ImageArray[Row, Col]);
+end;
+
+procedure TFieldForm.DrawEmptyField (DeleteOldImages: boolean);
+var
+  itrRow, itrCol, itr: smallint;
+begin
+  if DeleteOldImages then
+    for itr:= 0 to FieldSize do
+    begin
+      DeleteUnit (itr, FieldSize);  
+      DeleteUnit (FieldSize, itr);
+    end;
+  for itrRow:= 0 to FieldSize - 1 do
+    for itrCol:= 0 to FieldSize - 1 do
+      DrawUnit (0, itrRow, itrCol);  
 end;
 
 procedure TFieldForm.DrawVisibilityBorderUnit (UnitSide: byte; UnitIndex: byte);
@@ -105,7 +139,7 @@ begin
     begin
       Left:= _TopLeftFieldBorder.X + _BorderWidth + _UnitWidth div 3 +
             (_UnitWidth + _DistanceBeetwenUnits) * UnitIndex - _DistanceBeetwenUnits;
-      Top:= _TopLeftFieldBorder.Y - _FloorIncrement * FieldSize;  
+      Top:= _TopLeftFieldBorder.Y - _BorderWidth div 2;  
     end;
     visBot:
     begin
@@ -144,36 +178,6 @@ begin
   end; 
 end;
 
-procedure TFieldForm.DeleteUnit (Row, Col: byte);
-begin
-    FreeAndNil (ImageArray[Row, Col]);
-end;
-
-procedure TFieldForm.DrawEmptyField (DeleteOldImages: boolean);
-var
-  itrRow, itrCol, itr: smallint;
-begin
-  if DeleteOldImages then
-    for itr:= 0 to FieldSize do
-    begin
-      DeleteUnit (itr, FieldSize);  
-      DeleteUnit (FieldSize, itr);
-    end;
-  for itrRow:= 0 to FieldSize - 1 do
-    for itrCol:= 0 to FieldSize - 1 do
-      DrawUnit (0, itrRow, itrCol);  
-end;
-
-procedure TFieldForm.FormCreate(Sender: TObject);
-var
-  itrRow, itrCol: smallint;
-begin
-  //variables initializate
-  FieldSize:= _DefaultFieldSize;
-  DrawVisibilityBorder (false);
-  DrawEmptyField (false);
-end;
-
 procedure TFieldForm.FieldSizeSpinEditChange(Sender: TObject);
 begin
   if FieldSizeSpinEdit.Value < FieldSize then
@@ -200,15 +204,26 @@ begin
   GetColFromTag:= Tag mod 10;
 end;
 
-procedure TFieldForm.UnitClick(Sender: TObject);
+procedure TFieldForm.UnitClick (Sender: TObject);
 var
   Row, Col: byte;
+  SenderImage: TImage;
+  UnitNumber: byte;
 begin
   if Sender is TImage then
-    with Sender as TImage do
+  begin
+    SenderImage:= Sender as TImage;
+    Row:= GetRowFromTag (SenderImage.Tag);
+    Col:= GetColFromTag (SenderImage.Tag);
+    if UnitsArray[Row, Col] = FieldSize then
+      UnitNumber:= 0
+    else
     begin
-      DrawUnit (GetRowFromTag (Sender as TImage))
+      UnitNumber:= UnitsArray[Row, Col];
+      Inc (UnitNumber);
     end;
+    DrawUnit (UnitNumber, Row, Col);
+  end;
 end;
 
 initialization
