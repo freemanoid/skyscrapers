@@ -33,9 +33,12 @@ type
     FieldSizeSpinEdit: TSpinEdit;
     FieldSizeLabel: TLabel;
     CheckButton: TButton;
+    TestButton: TButton;
+    AutoSolutionButton: TButton;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: byte);
     procedure DrawEmptyField (DeleteOldImages: boolean);
+    procedure DrawFieldFromUnitsArray;
     procedure FieldSizeSpinEditChange(Sender: TObject);
     procedure DeleteUnit (Row, Col: byte);
     procedure DrawVisibilityBorder (DeleteOldUnits: boolean);
@@ -45,6 +48,8 @@ type
     function GetRowFromTag (Tag: integer): integer;
     function GetColFromTag (Tag: integer): integer;
     procedure CheckButtonClick(Sender: TObject);
+    procedure TestButtonClick(Sender: TObject);
+    procedure AutoSolutionButtonClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -75,7 +80,6 @@ end;
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: byte);
 begin
   UnitsArray[Row, Col]:= UnitNumber;
-  //DeleteUnit (Row, Col);
   if ImageArray[Row, Col] = nil then
     ImageArray[Row, Col]:= TImage.Create (FieldForm);
   with ImageArray[Row, Col] do
@@ -94,7 +98,16 @@ end;
 
 procedure TFieldForm.DeleteUnit (Row, Col: byte);
 begin
-    FreeAndNil (ImageArray[Row, Col]);
+  FreeAndNil (ImageArray[Row, Col]);
+end;
+
+procedure TFieldForm.DrawFieldFromUnitsArray;
+var
+  itrRow, itrCol: smallint;
+begin
+  for itrRow:= 0 to FieldSize - 1 do
+    for itrCol:= 0 to FieldSize - 1 do
+      DrawUnit (UnitsArray[itrRow][itrCol], itrRow, itrCol);  
 end;
 
 procedure TFieldForm.DrawEmptyField (DeleteOldImages: boolean);
@@ -123,7 +136,12 @@ begin
     Font.Size:= _BorderFontSize;
     Font.Name:= _BorderFontName;
     Font.Style:= [_BorderFontStyle];
-    Caption:= IntToStr (VisibilityArray[UnitSide][UnitIndex]);
+    //it is always possible to see at least one skyscraper (the highest one) and therefore we
+    //can use zero-visibility as undefined visibility
+    if VisibilityArray[UnitSide][UnitIndex] = 0 then
+      Caption:= ''
+    else
+      Caption:= IntToStr (VisibilityArray[UnitSide][UnitIndex]);
     case UnitSide of
     visLeft:
     begin
@@ -207,6 +225,8 @@ begin
   GetColFromTag:= Tag mod 10;
 end;
 
+
+
 procedure TFieldForm.UnitClick (Sender: TObject);
 var
   Row, Col: byte;
@@ -235,6 +255,18 @@ begin
     ShowMessage ('Решение верно!')
   else
     ShowMessage ('Решение неправильное!');
+end;
+
+procedure TFieldForm.TestButtonClick(Sender: TObject);
+begin
+  FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, 'vis.txt');
+  DrawVisibilityBorder(true);
+end;
+
+procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
+begin
+  FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
+  DrawFieldFromUnitsArray;
 end;
 
 initialization

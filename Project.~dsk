@@ -1,56 +1,86 @@
 [Closed Files]
-File_0=SourceModule,'C:\delphi\lab4\Unit1.pas',0,1,106,48,114,1,0
-File_1=SourceModule,'c:\program files\borland\delphi7\source\rtl\Win\Windows.pas',0,1,2528,1,2536,0,0
-File_2=SourceModule,'c:\program files\borland\delphi7\source\vcl\Graphics.pas',0,1,2308,1,2316,0,0
+File_0=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\system.pas',0,1,4243,21,4257,0,0
+File_1=SourceModule,'c:\program files\borland\delphi7\source\vcl\ExtCtrls.pas',0,1,2778,40,2792,0,0
+File_2=SourceModule,'c:\program files\borland\delphi7\source\vcl\Graphics.pas',0,1,1,21,167,0,0
+File_3=SourceModule,'C:\delphi\lab4\Unit1.pas',0,1,106,48,114,1,0
+File_4=SourceModule,'c:\program files\borland\delphi7\source\rtl\Win\Windows.pas',0,1,2528,1,2536,0,0
 
 [Modules]
-Module0=Z:\college\oaip\coursework\repo\field.pas
-Count=1
+Module0=C:\repo\FieldProcessing.pas
+Module1=C:\repo\Field.pas
+Module2=C:\repo\Project.dpr
+Count=3
 EditWindowCount=1
 
-[Z:\college\oaip\coursework\repo\field.pas]
+[C:\repo\FieldProcessing.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\repo\Field.pas]
 ModuleType=SourceModule
 FormState=1
+FormOnTop=0
+
+[C:\repo\Project.dpr]
+ModuleType=SourceModule
+FormState=0
 FormOnTop=0
 
 [C:\Program Files\Borland\Delphi7\Projects\ProjectGroup1.bpg]
 FormState=0
 FormOnTop=0
 
-[C:\repo\Project.dpr]
+[C:\repo\Project.todo]
 FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=1
-CurrentView=0
+ViewCount=3
+CurrentView=2
 View0=0
+View1=1
+View2=2
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=211
-Top=151
-Width=971
-Height=494
+Left=31
+Top=133
+Width=1298
+Height=587
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=963
-ClientHeight=460
-LeftPanelSize=0
+ClientWidth=1290
+ClientHeight=553
+LeftPanelSize=327
 LeftPanelClients=CodeExplorer@EditWindow0
-LeftPanelData=00000400010000000C000000436F64654578706C6F7265720000000000000000000000000000000000FFFFFFFF
+LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=0
 BottomPanelClients=MessageView@EditWindow0
 BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
 
 [View0]
-Module=Z:\college\oaip\coursework\repo\field.pas
+Module=C:\repo\Project.dpr
 CursorX=1
-CursorY=20
+CursorY=1
 TopLine=1
+LeftCol=1
+
+[View1]
+Module=C:\repo\Field.pas
+CursorX=3
+CursorY=31
+TopLine=43
+LeftCol=1
+
+[View2]
+Module=C:\repo\FieldProcessing.pas
+CursorX=5
+CursorY=152
+TopLine=139
 LeftCol=1
 
 [Watches]
@@ -83,16 +113,14 @@ Count=0
 [Main Window]
 Create=1
 Visible=1
-State=2
+State=0
 Left=0
 Top=0
 Width=1432
 Height=112
-MaxLeft=-4
-MaxTop=-4
-MaxWidth=1440
-MaxHeight=112
-ClientWidth=1432
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=1424
 ClientHeight=78
 
 [ProjectManager]
@@ -143,23 +171,23 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=1
+Visible=0
 State=0
-Left=2
-Top=131
-Width=190
-Height=623
+Left=0
+Top=112
+Width=215
+Height=639
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=182
-ClientHeight=597
-TBDockHeight=367
+ClientWidth=207
+ClientHeight=613
+TBDockHeight=383
 LRDockWidth=190
 Dockable=1
-SplitPos=85
+SplitPos=121
 ArrangeBy=Name
-SelectedItem=Caption
-ExpandedItems=
+SelectedItem=Name
+ExpandedItems=Constraints
 HiddenCategories=
 
 [ObjectTree]
@@ -169,37 +197,77 @@ State=0
 Left=0
 Top=112
 Width=190
-Height=248
+Height=254
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=182
-ClientHeight=222
-TBDockHeight=248
+ClientHeight=228
+TBDockHeight=254
 LRDockWidth=190
+Dockable=1
+
+[ToDo List]
+Create=1
+Visible=0
+State=0
+Left=622
+Top=237
+Width=651
+Height=250
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=643
+ClientHeight=224
+TBDockHeight=250
+LRDockWidth=651
+Dockable=1
+Column0Width=528
+Column1Width=30
+Column2Width=100
+Column3Width=70
+Column4Width=70
+SortOrder=0
+ShowHints=1
+ShowChecked=1
+
+[MessageHintFrm]
+Create=1
+Visible=0
+State=0
+Left=481
+Top=423
+Width=383
+Height=195
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=375
+ClientHeight=169
+TBDockHeight=195
+LRDockWidth=383
 Dockable=1
 
 [CodeExplorer@EditWindow0]
 Create=1
-Visible=0
+Visible=1
 State=0
-Left=-2
-Top=-4
-Width=140
-Height=305
+Left=0
+Top=12
+Width=327
+Height=541
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=140
-ClientHeight=305
+ClientWidth=327
+ClientHeight=541
 TBDockHeight=305
-LRDockWidth=140
+LRDockWidth=327
 Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
 Visible=0
 State=0
-Left=-8
-Top=-519
+Left=-31
+Top=-516
 Width=443
 Height=85
 MaxLeft=-1

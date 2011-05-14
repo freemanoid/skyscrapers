@@ -4,8 +4,8 @@ program Project;
 
 uses
   Forms,
-  field in 'field.pas' {FieldForm},
-  Unit1 in 'Z:\college\oaip\coursework\repo\Unit1.pas';
+  Field in 'Field.pas' {FieldForm},
+  FieldProcessing in 'FieldProcessing.pas';
 
 {$R *.res}
 
