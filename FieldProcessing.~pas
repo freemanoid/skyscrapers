@@ -7,6 +7,7 @@ uses Field;
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: byte): boolean;
 procedure WriteVisibilityArraysToFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
 procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
+procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
 
 implementation
 
@@ -163,36 +164,36 @@ begin
   Close (OutputFile);
 end;
 
-procedure FillRowAscending (var SomeRow: array of byte; MaxValue: byte);
+procedure FillColumnAscending (var SomeColumn: array of byte; MaxValue: byte);
 var
   itr: byte;
 begin
   for itr:= 0 to MaxValue - 1 do
-    SomeRow[itr]:= itr + 1;
+    SomeColumn[itr]:= itr + 1;
 end;
 
-procedure FillRowDescending (var SomeRow: array of byte; MaxValue: byte);
+procedure FillColumnDescending (var SomeColumn: array of byte; MaxValue: byte);
 var
   itr: byte;
 begin
   for itr:= MaxValue - 1 downto 0 do
-    SomeRow[itr]:= itr + 1;
+    SomeColumn[itr]:= itr + 1;
 end;
 
-procedure FillColumnAscending (var SomeArray: Field.TUnitsArray ; ColumnNumber, MaxValue: byte);
+procedure FillRowAscending (var SomeArray: Field.TUnitsArray; RowNumber, MaxValue: byte);
 var
   itr: byte;
 begin
   for itr:= 0 to MaxValue - 1 do
-    SomeArray[itr][ColumnNumber]:= itr + 1;
+    SomeArray[RowNumber][itr]:= itr + 1;
 end;
 
-procedure FillColumnDescending (var SomeArray: Field.TUnitsArray; ColumnNumber, MaxValue: byte);
+procedure FillRowDescending (var SomeArray: Field.TUnitsArray; RowNumber, MaxValue: byte);
 var
   itr: byte;
 begin
   for itr:= MaxValue - 1 downto 0 do
-    SomeArray[itr][ColumnNumber]:= itr + 1;
+    SomeArray[RowNumber][itr]:= itr + 1;
 end;
 
 
@@ -206,25 +207,25 @@ begin
   begin
   //left side
     if VisibilityArray[Field.visLeft][itr] = FieldSize then
-      FillRowAscending (UnitsArray[itr], FieldSize)
+      FillRowAscending (UnitsArray, itr, FieldSize)
     else
       if VisibilityArray[Field.visLeft][itr] = 1 then   
         UnitsArray [itr][0]:= 4;
   //right side
     if VisibilityArray[Field.visRight][itr] = FieldSize then
-      FillRowDescending (UnitsArray[itr], FieldSize)
+      FillRowDescending (UnitsArray, itr, FieldSize)
     else
       if VisibilityArray[Field.visRight][itr] = 1 then 
         UnitsArray [FieldSize - 1][itr]:= 4;
   //top side
     if VisibilityArray[Field.visTop][itr] = FieldSize then
-      FillColumnAscending (UnitsArray, itr, FieldSize)
+      FillColumnAscending (UnitsArray[itr], FieldSize)
     else
       if VisibilityArray[Field.visTop][itr] = 1 then 
         UnitsArray [0][itr]:= 4;
   //bottom side
     if  VisibilityArray[Field.visBot][itr] = FieldSize then
-      FillColumnDescending (UnitsArray, itr, FieldSize)
+      FillColumnDescending (UnitsArray[itr], FieldSize)
     else
       if VisibilityArray[Field.visBot][itr] = 1 then
         UnitsArray [FieldSize - 1][itr]:= 4;

@@ -1,8 +1,8 @@
 object FieldForm: TFieldForm
-  Left = 271
-  Top = 120
+  Left = 275
+  Top = 0
   Width = 722
-  Height = 576
+  Height = 467
   Caption = #1053#1077#1073#1086#1089#1082#1088#1105#1073#1099
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -60,5 +60,14 @@ object FieldForm: TFieldForm
     Caption = #1040#1074#1090#1086#1088#1077#1096#1077#1085#1080#1077
     TabOrder = 3
     OnClick = AutoSolutionButtonClick
+  end
+  object Button1: TButton
+    Left = 40
+    Top = 325
+    Width = 75
+    Height = 25
+    Caption = 'Button1'
+    TabOrder = 4
+    OnClick = Button1Click
   end
 end

@@ -50,6 +50,7 @@ type
     procedure CheckButtonClick(Sender: TObject);
     procedure TestButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -89,9 +90,9 @@ begin
     Tag:= Row * 10 + Col;//we use tag field to connect ImageArray and UnitsArray
     Parent:= FieldForm;
     Left:= _TopLeftFieldBorder.X + _BorderWidth +
-          (_UnitWidth + _DistanceBeetwenUnits) * Row;
+          (_UnitWidth + _DistanceBeetwenUnits) * Col;
     Top:= _TopLeftFieldBorder.Y + _BorderWidth +
-         (_UnitHeight + _DistanceBeetwenUnits) * Col - _FloorIncrement * UnitNumber;
+         (_UnitHeight + _DistanceBeetwenUnits) * Row - _FloorIncrement * UnitNumber;
     Picture.LoadFromFile('images\' + IntToStr (UnitNumber) + '.bmp'); //UnitNumber must be in 0-6
   end;
 end;
@@ -267,6 +268,11 @@ procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
   FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
   DrawFieldFromUnitsArray;
+end;
+
+procedure TFieldForm.Button1Click(Sender: TObject);
+begin
+  DrawUnit (1, 0, 2);
 end;
 
 initialization
