@@ -35,7 +35,6 @@ type
     CheckButton: TButton;
     TestButton: TButton;
     AutoSolutionButton: TButton;
-    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: byte);
     procedure DrawEmptyField (DeleteOldImages: boolean);
