@@ -1,6 +1,6 @@
 [Closed Files]
-File_0=SourceModule,'C:\repo\Field.pas',0,1,79,24,95,1,1
-File_1=SourceModule,'C:\repo\FieldProcessing.pas',0,1,231,25,257,0,0
+File_0=SourceModule,'C:\repo\Field.pas',0,1,73,35,97,1,0
+File_1=SourceModule,'C:\repo\FieldProcessing.pas',0,1,25,39,44,0,0
 File_2=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\system.pas',0,1,4243,21,4257,0,0
 File_3=SourceModule,'c:\program files\borland\delphi7\source\vcl\ExtCtrls.pas',0,1,2778,40,2792,0,0
 File_4=SourceModule,'c:\program files\borland\delphi7\source\vcl\Graphics.pas',0,1,1,21,167,0,0
@@ -120,7 +120,7 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=1
+Visible=0
 State=0
 Left=0
 Top=112

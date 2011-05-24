@@ -15,12 +15,51 @@ type
   TCheckSet = set of 1..6;
   TVisibilityRecord = Field.TVisibilityArray;
   TVisibilityFile = file of TVisibilityRecord;
-  TUnitStats = array[1..6] of byte;//Containts the "statistic" information about different types of
+  TPlacedVariantsArray = array[0..5] of array[0..5] of array[1..6] of boolean;//Containts such types of units
+  //that can be placed in the concrete unit
+  TUnitStatsArray = array[1..6] of byte;//Containts the "statistic" information about different types of
   //units that have been already placed to their places. Array index - unit type, value - number of
   //units of this type
   
 var
-  UnitStats: TUnitStats;
+  UnitStats: TUnitStatsArray;
+  PlacedVariants: TPlacedVariantsArray;
+
+procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; 
+                                                  UnitsArray: Field.TUnitsArray; FieldSize: byte); 
+var
+  itrVis, itrUnit, itrVariants: integer;
+begin
+  for itrVis:= 0 to FieldSize - 1 do
+  begin
+    //from left
+    for itrUnit:= 0 to (VisibilityArray[Field.visLeft][itrVis] - 2) do
+      for itrVariants:= FieldSize - VisibilityArray[Field.visLeft][itrVis] + itrUnit + 2 to FieldSize do 
+        PlacedVariants[itrVis][itrUnit][itrVariants]:= false;
+    //from right
+    for itrUnit:= 0 to (VisibilityArray[Field.visRight][itrVis] - 2) do
+      for itrVariants:= (FieldSize - VisibilityArray[Field.visRight][itrVis] + itrUnit + 2) to 4 do 
+        PlacedVariants[itrVis][FieldSize - 1 - itrUnit][itrVariants]:= false;
+    //from top
+    for itrUnit:= 0 to (VisibilityArray[Field.visTop][itrVis] - 2) do
+      for itrVariants:= FieldSize - VisibilityArray[Field.visTop][itrVis] + itrUnit + 2 to FieldSize do 
+        PlacedVariants[itrUnit][itrVis][itrVariants]:= false;
+    //from bottom
+    for itrUnit:= 0 to (VisibilityArray[Field.visBot][itrVis] - 2) do
+      for itrVariants:= FieldSize - VisibilityArray[Field.visBot][itrVis] + itrUnit + 2 to FieldSize do 
+        PlacedVariants[FieldSize - 1 - itrUnit][itrVis][itrVariants]:= false;
+  end;
+end;
+  
+procedure ResetPlacedVariantsArray (FieldSize: byte);
+var
+  itr1, itr2, itr3: byte;
+begin
+  for itr1:= 0 to FieldSize - 1 do
+    for itr2:= 0 to FieldSize - 1 do
+      for itr3:= 1 to FieldSize do
+        PlacedVariants[itr1][itr2][itr3]:= true;
+end;
 
 procedure AddUnitStat (UnitValue, PreviousValue: byte);
 begin
@@ -225,7 +264,7 @@ end;
 //identify some skyscrapers
 procedure CheckMaxAndMinVisibility (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; const FieldSize: byte);
 var
-  itrRow, itrCol, itr, itrSide: byte;
+  itr: byte;
 begin
   for itr:= 0 to FieldSize - 1 do
   begin
@@ -314,7 +353,7 @@ begin
   end;
 end;
 
-procedure CheckIfOnlyOneVariantToLocateUnit (var UnitsArray: Field.TUnitsArray; UnitStats: TUnitStats; FieldSize: byte);
+procedure CheckIfOnlyOneVariantToLocateUnit (var UnitsArray: Field.TUnitsArray; UnitStats: TUnitStatsArray; FieldSize: byte);
 var
   itrHostedUnit, itrRow, itrCol, FreeColIndexCounter, FreeRowIndexCounter: byte;
 begin
@@ -337,8 +376,9 @@ begin
 end;
 
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
-
 begin
+  ResetPlacedVariantsArray (FieldSize);
+  SetPlacedVariantsAccordingToVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckIfOnlyOneEmptyUnitOnLine (UnitsArray, FieldSize);
   CheckIfOnlyOneVariantToLocateUnit (UnitsArray, UnitStats, FieldSize);

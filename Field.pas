@@ -76,6 +76,7 @@ begin
   FieldSize:= _DefaultFieldSize;
   DrawEmptyField (false);
   DrawVisibilityBorder (false);
+  FieldProcessing.ResetPlacedVariantsArray (FieldSize);
 end;
 
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: byte);
