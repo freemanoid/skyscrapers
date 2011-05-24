@@ -8,6 +8,7 @@ function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityAr
 procedure WriteVisibilityArraysToFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
 procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
+procedure ResetPlacedVariantsArray (FieldSize: byte);
 
 implementation
 
@@ -25,8 +26,7 @@ var
   UnitStats: TUnitStatsArray;
   PlacedVariants: TPlacedVariantsArray;
 
-procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; 
-                                                  UnitsArray: Field.TUnitsArray; FieldSize: byte); 
+procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; FieldSize: byte); 
 var
   itrVis, itrUnit, itrVariants: integer;
 begin
@@ -378,10 +378,11 @@ end;
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
 begin
   ResetPlacedVariantsArray (FieldSize);
-  SetPlacedVariantsAccordingToVisibility (VisibilityArray, UnitsArray, FieldSize);
+  SetPlacedVariantsAccordingToVisibility (VisibilityArray, FieldSize);
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckIfOnlyOneEmptyUnitOnLine (UnitsArray, FieldSize);
   CheckIfOnlyOneVariantToLocateUnit (UnitsArray, UnitStats, FieldSize);
+  UpdatePlacedVariantsAccordingToUnitArray (Units
 end;
 
 end.
