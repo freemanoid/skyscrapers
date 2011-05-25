@@ -9,6 +9,7 @@ procedure WriteVisibilityArraysToFile (var VisibilityArray: Field.TVisibilityArr
 procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
 procedure ResetPlacedVariantsArray (FieldSize: byte);
+procedure UpdatePlacedVariantsAccordingToNewUnit (UnitValue, Row, Col, FieldSize: byte);
 
 implementation
 
@@ -375,13 +376,38 @@ begin
     end;
 end;
 
-procedure UpdatePlacedVariantsAccordingToUnitsArray (UnitsArray: Field.TUnitsArray; FieldSize: byte);
-var
-  itrRow, itrCol: byte;
+procedure AddPlacedVariant (Variant, Row, Col: byte);
 begin
-  for itrRow:= 0 to FieldSize - 1 do
-    for itrCol:= 0 to FieldSize - 1 do
-      ;  
+  PlacedVariants[Row][Col][Variant]:= true;
+end;
+
+procedure RemovePlacedVariant (Variant, Row, Col: byte);
+begin
+  PlacedVariants[Row][Col][Variant]:= false;
+end;
+
+procedure RemoveAllPlacedVariantsExcept (Variant, Row, Col, FieldSize: byte);
+var
+  itrVariant: byte;
+begin
+  for itrVariant:= 1 to FieldSize do
+    PlacedVariants[Row][Col][itrVariant]:= false;
+  PlacedVariants[Row][Col][Variant]:= true;
+end;
+
+procedure UpdatePlacedVariantsAccordingToNewUnit (UnitValue, Row, Col, FieldSize: shortint);
+var
+  itrRow, itrCol, itrVariant: shortint;
+begin
+  for itrRow:= 0 to Row - 1 do
+    RemovePlacedVariant (UnitValue, itrRow, Col);
+  for itrRow:= Row + 1 to FieldSize - 1 do
+    RemovePlacedVariant (UnitValue, itrRow, Col);
+  for itrCol:= 0 to Col - 1 do
+    RemovePlacedVariant (UnitValue, Row, itrCol);
+  for itrCol:= Col + 1 to FieldSize - 1 do
+    RemovePlacedVariant (UnitValue, Row, itrCol);
+  RemoveAllPlacedVariantsExcept (UnitValue, Row, Col, FieldSize);
 end;
 
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
@@ -391,7 +417,6 @@ begin
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckIfOnlyOneEmptyUnitOnLine (UnitsArray, FieldSize);
   CheckIfOnlyOneVariantToLocateUnit (UnitsArray, UnitStats, FieldSize);
-//  UpdatePlacedVariantsAccordingToUnitArray (UnitsArray: Field.TUnitsArray; FieldSize: byte);
 end;
 
 end.

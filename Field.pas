@@ -70,9 +70,10 @@ uses
 
 {$R *.dfm}
 
-procedure TFieldForm.SetUnit (var UnitsArray: TUnitsArray; Value, row, col: byte);
+procedure TFieldForm.SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: byte);
 begin
-  UnitsArray[row][col]:= Value;
+  FieldProcessing.UpdatePlacedVariantsAccordingToNewUnit (Value, Row, Col, FieldSize);                      
+  UnitsArray[Row][Col]:= Value;
 end;
 
 procedure TFieldForm.FormCreate(Sender: TObject);
