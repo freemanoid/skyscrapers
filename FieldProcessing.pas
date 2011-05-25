@@ -381,7 +381,7 @@ var
 begin
   for itrRow:= 0 to FieldSize - 1 do
     for itrCol:= 0 to FieldSize - 1 do
-      ;  
+        
 end;
 
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);

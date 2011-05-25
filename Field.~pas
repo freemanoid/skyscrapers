@@ -50,7 +50,7 @@ type
     procedure CheckButtonClick(Sender: TObject);
     procedure TestButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure SetUnit (var UnitsArray: TUnitsArray; Value, row, col: byte);
   private
     { Private declarations }
   public
@@ -70,6 +70,11 @@ uses
 
 {$R *.dfm}
 
+procedure TFieldForm.SetUnit (var UnitsArray: TUnitsArray; Value, row, col: byte);
+begin
+  UnitsArray[row][col]:= Value;
+end;
+
 procedure TFieldForm.FormCreate(Sender: TObject);
 begin
   //variables initializate
@@ -81,7 +86,8 @@ end;
 
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: byte);
 begin
-  UnitsArray[Row, Col]:= UnitNumber;
+  SetUnit (UnitsArray, UnitNumber, Row, Col);
+  //UnitsArray[Row, Col]:= UnitNumber;
   if ImageArray[Row, Col] = nil then
     ImageArray[Row, Col]:= TImage.Create (FieldForm);
   with ImageArray[Row, Col] do
@@ -269,11 +275,6 @@ procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
   FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
   DrawFieldFromUnitsArray;
-end;
-
-procedure TFieldForm.Button1Click(Sender: TObject);
-begin
-  DrawUnit (1, 0, 2);
 end;
 
 initialization

@@ -86,8 +86,7 @@ end;
 
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: byte);
 begin
-  SetUnit (UnitsArray, UnitNumber, Row, Col);
-  //UnitsArray[Row, Col]:= UnitNumber;
+  UnitsArray[Row, Col]:= UnitNumber;
   if ImageArray[Row, Col] = nil then
     ImageArray[Row, Col]:= TImage.Create (FieldForm);
   with ImageArray[Row, Col] do

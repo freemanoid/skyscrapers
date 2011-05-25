@@ -380,7 +380,8 @@ var
   itrRow, itrCol: byte;
 begin
   for itrRow:= 0 to FieldSize - 1 do
-    for itrCol:= 0 to FieldSize - 1 do  
+    for itrCol:= 0 to FieldSize - 1 do
+      ;  
 end;
 
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
@@ -390,7 +391,7 @@ begin
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckIfOnlyOneEmptyUnitOnLine (UnitsArray, FieldSize);
   CheckIfOnlyOneVariantToLocateUnit (UnitsArray, UnitStats, FieldSize);
-  UpdatePlacedVariantsAccordingToUnitArray (UnitsArray: Field.TUnitsArray; FieldSize: byte);
+//  UpdatePlacedVariantsAccordingToUnitArray (UnitsArray: Field.TUnitsArray; FieldSize: byte);
 end;
 
 end.
