@@ -4,12 +4,12 @@ interface
 
 uses Field;
 
-function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: byte): boolean;
+function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 procedure WriteVisibilityArraysToFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
 procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
-procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
-procedure ResetPlacedVariantsArray (FieldSize: byte);
-procedure UpdatePlacedVariantsAccordingToNewUnit (UnitValue, Row, Col, FieldSize: byte);
+procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
+procedure ResetPlacedVariantsArray (FieldSize: shortint);
+procedure UpdatePlacedVariantsAccordingToNewUnit (UnitValue, Row, Col, FieldSize: shortint);
 
 implementation
 
@@ -19,7 +19,7 @@ type
   TVisibilityFile = file of TVisibilityRecord;
   TPlacedVariantsArray = array[0..5] of array[0..5] of array[1..6] of boolean;//Containts such types of units
   //that can be placed in the concrete unit
-  TUnitStatsArray = array[1..6] of byte;//Containts the "statistic" information about different types of
+  TUnitStatsArray = array[1..6] of shortint;//Containts the "statistic" information about different types of
   //units that have been already placed to their places. Array index - unit type, value - number of
   //units of this type
   
@@ -27,7 +27,7 @@ var
   UnitStats: TUnitStatsArray;
   PlacedVariants: TPlacedVariantsArray;
 
-procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; FieldSize: byte); 
+procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint); 
 var
   itrVis, itrUnit, itrVariants: integer;
 begin
@@ -52,9 +52,9 @@ begin
   end;
 end;
   
-procedure ResetPlacedVariantsArray (FieldSize: byte);
+procedure ResetPlacedVariantsArray (FieldSize: shortint);
 var
-  itr1, itr2, itr3: byte;
+  itr1, itr2, itr3: shortint;
 begin
   for itr1:= 0 to FieldSize - 1 do
     for itr2:= 0 to FieldSize - 1 do
@@ -62,23 +62,23 @@ begin
         PlacedVariants[itr1][itr2][itr3]:= true;
 end;
 
-procedure AddUnitStat (UnitValue, PreviousValue: byte);
+procedure AddUnitStat (UnitValue, PreviousValue: shortint);
 begin
   if PreviousValue = 0 then
     Inc (UnitStats[UnitValue]);
 end;
 
-procedure SetReset (var SomeSet: TCheckSet; MaxValue: byte);
+procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint);
 begin
   SomeSet:= [1..MaxValue];
 end;
 
-function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: byte): boolean;
+function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 var
-  itrRow, itrCol, itr: byte;
+  itrRow, itrCol, itr: shortint;
   CheckSet: TCheckSet;
-  MaxFloor: byte;
-  VisibilityCount: byte;
+  MaxFloor: shortint;
+  VisibilityCount: shortint;
 begin
 //repeat checking in rows and columns 
   Result:= true;
@@ -216,56 +216,60 @@ begin
   Close (OutputFile);
 end;
 
-procedure FillColumnAscending (var SomeArray: Field.TUnitsArray; ColNumber, MaxValue: byte);
+procedure FillColumnAscending (var SomeArray: Field.TUnitsArray; ColNumber, FieldSize: shortint);
 var
-  itr: byte;
+  itr: shortint;
 begin
-  for itr:= 0 to MaxValue - 1 do
+  for itr:= 0 to FieldSize - 1 do
   begin
     AddUnitStat (itr + 1, SomeArray[itr][ColNumber]);
-    SomeArray[itr][ColNumber]:= itr + 1;
+    UpdatePlacedVariantsAccordingToNewUnit (itr + 1, itr, ColNumber, FieldSize);
+    Field.FieldForm.SetUnit(SomeArray, itr + 1, itr, ColNumber);
   end;
 end;
 
-procedure FillColumnDescending (var SomeArray: Field.TUnitsArray; ColNumber, MaxValue: byte);
+procedure FillColumnDescending (var SomeArray: Field.TUnitsArray; ColNumber, FieldSize: shortint);
 var
-  itr: byte;
+  itr: shortint;
 begin
-  for itr:= MaxValue - 1 downto 0 do
+  for itr:= FieldSize - 1 downto 0 do
   begin
-    AddUnitStat (MaxValue - itr, SomeArray[itr][ColNumber]);
-    SomeArray[itr][ColNumber]:= MaxValue - itr;
+    AddUnitStat (FieldSize - itr, SomeArray[itr][ColNumber]);
+    UpdatePlacedVariantsAccordingToNewUnit (FieldSize - itr, itr, ColNumber, FieldSize);
+    Field.FieldForm.SetUnit (SomeArray, FieldSize - itr, itr, ColNumber);
   end;
 end;
 
-procedure FillRowAscending (var SomeArray: Field.TUnitsArray; RowNumber, MaxValue: byte);
+procedure FillRowAscending (var SomeArray: Field.TUnitsArray; RowNumber, FieldSize: shortint);
 var
-  itr: byte;
+  itr: shortint;
 begin
-  for itr:= 0 to MaxValue - 1 do
+  for itr:= 0 to FieldSize - 1 do
   begin
     AddUnitStat (itr + 1, SomeArray[RowNumber][itr]);
-    Field.FieldForm.SetUnit(SomeArray, itr + 1, RowNumber, itr);
+    UpdatePlacedVariantsAccordingToNewUnit (itr + 1, RowNumber, itr, FieldSize);
+    Field.FieldForm.SetUnit (SomeArray, itr + 1, RowNumber, itr);
   end;
 end;
 
-procedure FillRowDescending (var SomeArray: Field.TUnitsArray; RowNumber, MaxValue: byte);
+procedure FillRowDescending (var SomeArray: Field.TUnitsArray; RowNumber, FieldSize: shortint);
 var
-  itr: byte;
+  itr: shortint;
 begin
-  for itr:= MaxValue - 1 downto 0 do
+  for itr:= FieldSize - 1 downto 0 do
   begin
-    AddUnitStat (MaxValue - itr, SomeArray[RowNumber][itr]);
-    Field.FieldForm.SetUnit (SomeArray, MaxValue - itr, RowNumber, itr);
+    AddUnitStat (FieldSize - itr, SomeArray[RowNumber][itr]);
+    UpdatePlacedVariantsAccordingToNewUnit (FieldSize - itr, RowNumber, itr, FieldSize);
+    Field.FieldForm.SetUnit (SomeArray, FieldSize - itr, RowNumber, itr);
   end;
 end;
 
 
 //Check visibility for max(fieldsize) and min(1) visibility, becouse in this way we can 
 //identify some skyscrapers
-procedure CheckMaxAndMinVisibility (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; const FieldSize: byte);
+procedure CheckMaxAndMinVisibility (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; const FieldSize: shortint);
 var
-  itr: byte;
+  itr: shortint;
 begin
   for itr:= 0 to FieldSize - 1 do
   begin
@@ -276,6 +280,7 @@ begin
       if VisibilityArray[Field.visLeft][itr] = 1 then
       begin   
         AddUnitStat (4, UnitsArray [itr][0]);
+        UpdatePlacedVariantsAccordingToNewUnit (4, itr, 0, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, 4, itr, 0);
       end;
   //right side
@@ -285,6 +290,7 @@ begin
       if VisibilityArray[Field.visRight][itr] = 1 then 
       begin
         AddUnitStat (4, UnitsArray [itr][FieldSize - 1]);
+        UpdatePlacedVariantsAccordingToNewUnit (4, itr, FieldSize - 1, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, 4, itr, FieldSize - 1);
       end;
   //top side
@@ -294,6 +300,7 @@ begin
       if VisibilityArray[Field.visTop][itr] = 1 then 
       begin
         AddUnitStat (4, UnitsArray [0][itr]);
+        UpdatePlacedVariantsAccordingToNewUnit (4, 0, itr, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, 4, 0, itr);
       end;
   //bottom side
@@ -303,14 +310,15 @@ begin
       if VisibilityArray[Field.visBot][itr] = 1 then
       begin
         AddUnitStat (4, UnitsArray [FieldSize - 1][itr]);
+        UpdatePlacedVariantsAccordingToNewUnit (4, FieldSize - 1, itr, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, 4, FieldSize - 1, itr);
       end;
   end;
 end;
 
-procedure CheckIfOnlyOneEmptyUnitOnLine (var UnitsArray: Field.TUnitsArray; FieldSize: byte );
+procedure CheckIfOnlyOneEmptyUnitOnLine (var UnitsArray: Field.TUnitsArray; FieldSize: shortint );
 var
-  itrRow, itrCol, itrEmptyUnits, EmptyUnitPosition, EmptyUnitCounter: byte;
+  itrRow, itrCol, itrEmptyUnits, EmptyUnitPosition, EmptyUnitCounter: shortint;
 begin
   //all rows
   for itrRow:= 0 to FieldSize - 1 do
@@ -329,6 +337,7 @@ begin
     if itrEmptyUnits = 1 then
     begin
       AddUnitStat (EmptyUnitCounter, UnitsArray[itrRow][EmptyUnitPosition]);
+      UpdatePlacedVariantsAccordingToNewUnit (EmptyUnitCounter, itrRow, EmptyUnitPosition, FieldSize);
       Field.FieldForm.SetUnit (UnitsArray, EmptyUnitCounter, itrRow, EmptyUnitPosition);
     end;
   end;
@@ -349,14 +358,15 @@ begin
     if itrEmptyUnits = 1 then
     begin
       AddUnitStat (EmptyUnitCounter, UnitsArray[EmptyUnitPosition][itrCol]);
+      UpdatePlacedVariantsAccordingToNewUnit (EmptyUnitCounter, EmptyUnitPosition, itrCol, FieldSize);
       Field.FieldForm.SetUnit (UnitsArray, EmptyUnitCounter, EmptyUnitPosition, itrCol);
     end;
   end;
 end;
 
-procedure CheckIfOnlyOneVariantToLocateUnit (var UnitsArray: Field.TUnitsArray; UnitStats: TUnitStatsArray; FieldSize: byte);
+procedure CheckIfOnlyOneVariantToLocateUnit (var UnitsArray: Field.TUnitsArray; UnitStats: TUnitStatsArray; FieldSize: shortint);
 var
-  itrHostedUnit, itrRow, itrCol, FreeColIndexCounter, FreeRowIndexCounter: byte;
+  itrHostedUnit, itrRow, itrCol, FreeColIndexCounter, FreeRowIndexCounter: shortint;
 begin
   for itrHostedUnit:= 1 to FieldSize do
     if UnitStats[itrHostedUnit] = FieldSize - 1 then
@@ -372,23 +382,24 @@ begin
             Break;
           end;
       AddUnitStat (itrHostedUnit, UnitsArray[FreeRowIndexCounter][FreeColIndexCounter]);
+      UpdatePlacedVariantsAccordingToNewUnit (itrHostedUnit, FreeRowIndexCounter, FreeColIndexCounter, FieldSize);
       Field.FieldForm.SetUnit (UnitsArray, itrHostedUnit, FreeRowIndexCounter, FreeColIndexCounter);
     end;
 end;
 
-procedure AddPlacedVariant (Variant, Row, Col: byte);
+procedure AddPlacedVariant (Variant, Row, Col: shortint);
 begin
   PlacedVariants[Row][Col][Variant]:= true;
 end;
 
-procedure RemovePlacedVariant (Variant, Row, Col: byte);
+procedure RemovePlacedVariant (Variant, Row, Col: shortint);
 begin
   PlacedVariants[Row][Col][Variant]:= false;
 end;
 
-procedure RemoveAllPlacedVariantsExcept (Variant, Row, Col, FieldSize: byte);
+procedure RemoveAllPlacedVariantsExcept (Variant, Row, Col, FieldSize: shortint);
 var
-  itrVariant: byte;
+  itrVariant: shortint;
 begin
   for itrVariant:= 1 to FieldSize do
     PlacedVariants[Row][Col][itrVariant]:= false;
@@ -410,13 +421,49 @@ begin
   RemoveAllPlacedVariantsExcept (UnitValue, Row, Col, FieldSize);
 end;
 
-procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: byte);
+function IsOneVariantOnLine (PlacedVariants: TPlacedVariantsArray; Row, Col, Length: shortint): shortint;
+var
+  IsOnlyOneVariant: boolean;
+  itrVar: shortint;
+begin
+  IsOnlyOneVariant:= false;
+  for itrVar:= 1 to Length do
+    if PlacedVariants[Row][Col][itrVar] then
+      if not IsOnlyOneVariant then
+      begin
+        IsOnlyOneVariant:= true;
+        Result:= itrVar;
+      end
+      else
+      begin
+        Result:= 0;
+        Exit;
+      end;  
+end;
+
+procedure UpdateUnitsArrayAccordingToPlacedVariants (var UnitsArray: Field.TUnitsArray; 
+                                                     PlacedVariants: TPlacedVariantsArray; FieldSize: shortint);
+var
+  itrRow, itrCol: shortint;
+begin
+  for itrRow:= 0 to FieldSize - 1 do
+    for itrCol:= 0 to FieldSize - 1 do
+      if (UnitsArray[itrRow][itrCol] = 0) and (IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize) > 0) then
+      begin
+        UpdatePlacedVariantsAccordingToNewUnit(IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize), itrRow, itrCol, FieldSize);
+        Field.FieldForm.SetUnit(UnitsArray, IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize), itrRow, itrCol);
+      end;
+end;
+                                                              
+procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
 begin
   ResetPlacedVariantsArray (FieldSize);
   SetPlacedVariantsAccordingToVisibility (VisibilityArray, FieldSize);
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckIfOnlyOneEmptyUnitOnLine (UnitsArray, FieldSize);
   CheckIfOnlyOneVariantToLocateUnit (UnitsArray, UnitStats, FieldSize);
+  UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
+  UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
 end;
 
 end.

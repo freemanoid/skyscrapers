@@ -71,8 +71,7 @@ uses
 {$R *.dfm}
 
 procedure TFieldForm.SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: byte);
-begin
-  FieldProcessing.UpdatePlacedVariantsAccordingToNewUnit (Value, FieldSize, Row, Col);                      
+begin                     
   UnitsArray[Row][Col]:= Value;
 end;
 

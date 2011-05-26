@@ -26,9 +26,9 @@ const
   
 type
   TImageArray = array[0..5, 0..5] of TImage;
-  TUnitsArray = array[0..5, 0..5] of byte;
+  TUnitsArray = array[0..5, 0..5] of shortint;
   TVisibilityLabelArray = array[1..4] of array[0..5] of TLabel;
-  TVisibilityArray = array[1..4] of array[0..5] of byte;
+  TVisibilityArray = array[1..4] of array[0..5] of shortint;
   TFieldForm = class(TForm)
     FieldSizeSpinEdit: TSpinEdit;
     FieldSizeLabel: TLabel;
@@ -36,27 +36,27 @@ type
     TestButton: TButton;
     AutoSolutionButton: TButton;
     procedure FormCreate(Sender: TObject);
-    procedure DrawUnit (UnitNumber, Row, Col: byte);
+    procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField (DeleteOldImages: boolean);
     procedure DrawFieldFromUnitsArray;
     procedure FieldSizeSpinEditChange(Sender: TObject);
-    procedure DeleteUnit (Row, Col: byte);
+    procedure DeleteUnit (Row, Col: shortint);
     procedure DrawVisibilityBorder (DeleteOldUnits: boolean);
-    procedure DrawVisibilityBorderUnit (UnitSide: byte; UnitIndex: byte);
-    procedure DeleteVisibilityUnit (UnitSide, UnitIndex: byte);
+    procedure DrawVisibilityBorderUnit (UnitSide: shortint; UnitIndex: shortint);
+    procedure DeleteVisibilityUnit (UnitSide, UnitIndex: shortint);
     procedure UnitClick(Sender: TObject);
     function GetRowFromTag (Tag: integer): integer;
     function GetColFromTag (Tag: integer): integer;
     procedure CheckButtonClick(Sender: TObject);
     procedure TestButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
-    procedure SetUnit (var UnitsArray: TUnitsArray; Value, row, col: byte);
+    procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
   private
     { Private declarations }
   public
     ImageArray: TImageArray;
     UnitsArray: TUnitsArray;
-    FieldSize: byte;
+    FieldSize: shortint;
     VisibilityLabelArray: TVisibilityLabelArray;
     VisibilityArray: TVisibilityArray;
   end;
@@ -70,9 +70,8 @@ uses
 
 {$R *.dfm}
 
-procedure TFieldForm.SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: byte);
-begin
-  FieldProcessing.UpdatePlacedVariantsAccordingToNewUnit (Value, Row, Col, FieldSize);                      
+procedure TFieldForm.SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
+begin                     
   UnitsArray[Row][Col]:= Value;
 end;
 
@@ -85,7 +84,7 @@ begin
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
 end;
 
-procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: byte);
+procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: shortint);
 begin
   UnitsArray[Row, Col]:= UnitNumber;
   if ImageArray[Row, Col] = nil then
@@ -104,7 +103,7 @@ begin
   end;
 end;
 
-procedure TFieldForm.DeleteUnit (Row, Col: byte);
+procedure TFieldForm.DeleteUnit (Row, Col: shortint);
 begin
   FreeAndNil (ImageArray[Row, Col]);
 end;
@@ -133,7 +132,7 @@ begin
       DrawUnit (0, itrRow, itrCol);  
 end;
 
-procedure TFieldForm.DrawVisibilityBorderUnit (UnitSide: byte; UnitIndex: byte);
+procedure TFieldForm.DrawVisibilityBorderUnit (UnitSide: shortint; UnitIndex: shortint);
 begin
   DeleteVisibilityUnit (UnitSide, UnitIndex);
   VisibilityLabelArray[UnitSide][UnitIndex]:= TLabel.Create(FieldForm);
@@ -181,14 +180,14 @@ begin
   end;  
 end;
 
-procedure TFieldForm.DeleteVisibilityUnit (UnitSide, UnitIndex: byte);
+procedure TFieldForm.DeleteVisibilityUnit (UnitSide, UnitIndex: shortint);
 begin
   FreeAndNil (VisibilityLabelArray[UnitSide][UnitIndex]);  
 end;
 
 procedure TFieldForm.DrawVisibilityBorder (DeleteOldUnits: boolean);
 var
-  itr: byte;
+  itr: shortint;
 begin
   if DeleteOldUnits then
     for itr:= 0 to FieldSize do
@@ -237,9 +236,9 @@ end;
 
 procedure TFieldForm.UnitClick (Sender: TObject);
 var
-  Row, Col: byte;
+  Row, Col: shortint;
   SenderImage: TImage;
-  UnitNumber: byte;
+  UnitNumber: shortint;
 begin
   if Sender is TImage then
   begin
