@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Spin;
+  Dialogs, ExtCtrls, StdCtrls, Spin, Menus;
 
 const
   _UnitWidth = 81;
@@ -35,6 +35,11 @@ type
     CheckButton: TButton;
     TestButton: TButton;
     AutoSolutionButton: TButton;
+    MainMenu: TMainMenu;
+    OpenDialog: TOpenDialog;
+    File1: TMenuItem;
+    Open: TMenuItem;
+    ClearButton: TButton;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField (DeleteOldImages: boolean);
@@ -42,8 +47,6 @@ type
     procedure FieldSizeSpinEditChange(Sender: TObject);
     procedure DeleteUnit (Row, Col: shortint);
     procedure DrawVisibilityBorder (DeleteOldUnits: boolean);
-    procedure DrawVisibilityBorderUnit (UnitSide: shortint; UnitIndex: shortint);
-    procedure DeleteVisibilityUnit (UnitSide, UnitIndex: shortint);
     procedure UnitClick(Sender: TObject);
     function GetRowFromTag (Tag: integer): integer;
     function GetColFromTag (Tag: integer): integer;
@@ -51,6 +54,8 @@ type
     procedure TestButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
     procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
+    procedure OpenClick(Sender: TObject);
+    procedure ClearButtonClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -132,60 +137,60 @@ begin
       DrawUnit (0, itrRow, itrCol);  
 end;
 
-procedure TFieldForm.DrawVisibilityBorderUnit (UnitSide: shortint; UnitIndex: shortint);
-begin
-  DeleteVisibilityUnit (UnitSide, UnitIndex);
-  VisibilityLabelArray[UnitSide][UnitIndex]:= TLabel.Create(FieldForm);
-  with VisibilityLabelArray[UnitSide][UnitIndex] do
-  begin
-    Color:= _VisibilityUnitBackgroundColor;
-    Parent:= FieldForm;
-    Font.Size:= _BorderFontSize;
-    Font.Name:= _BorderFontName;
-    Font.Style:= [_BorderFontStyle];
-    //it is always possible to see at least one skyscraper (the highest one) and therefore we
-    //can use zero-visibility as undefined visibility
-    if VisibilityArray[UnitSide][UnitIndex] = 0 then
-      Caption:= ''
-    else
-      Caption:= IntToStr (VisibilityArray[UnitSide][UnitIndex]);
-    case UnitSide of
-    visLeft:
-    begin
-      Left:= _TopLeftFieldBorder.X + _BorderWidth div 2;
-      Top:= _TopLeftFieldBorder.Y + _BorderWidth +
-            (_UnitHeight + _DistanceBeetwenUnits) * UnitIndex;  
-    end;
-    visRight:
-    begin
-      Left:= _TopLeftFieldBorder.X + _BorderWidth + 
-            (_UnitWidth + _DistanceBeetwenUnits) * FieldSize - _DistanceBeetwenUnits;
-      Top:= _TopLeftFieldBorder.Y + _BorderWidth +
-            (_UnitHeight + _DistanceBeetwenUnits) * UnitIndex;  
-    end;
-    visTop:
-    begin
-      Left:= _TopLeftFieldBorder.X + _BorderWidth + _UnitWidth div 3 +
-            (_UnitWidth + _DistanceBeetwenUnits) * UnitIndex - _DistanceBeetwenUnits;
-      Top:= _TopLeftFieldBorder.Y - _BorderWidth div 2;  
-    end;
-    visBot:
-    begin
-      Left:= _TopLeftFieldBorder.X + _BorderWidth + _UnitWidth div 3 +
-            (_UnitWidth + _DistanceBeetwenUnits) * UnitIndex - _DistanceBeetwenUnits;
-      Top:= _TopLeftFieldBorder.Y + _BorderWidth + 
-            (_UnitWidth + _DistanceBeetwenUnits) * FieldSize;  
-    end;
-    end;
-  end;  
-end;
-
-procedure TFieldForm.DeleteVisibilityUnit (UnitSide, UnitIndex: shortint);
-begin
-  FreeAndNil (VisibilityLabelArray[UnitSide][UnitIndex]);  
-end;
-
 procedure TFieldForm.DrawVisibilityBorder (DeleteOldUnits: boolean);
+  procedure DeleteVisibilityUnit (UnitSide, UnitIndex: shortint);
+    begin
+      FreeAndNil (VisibilityLabelArray[UnitSide][UnitIndex]);  
+    end;
+    
+  procedure DrawVisibilityBorderUnit (UnitSide: shortint; UnitIndex: shortint);
+  begin
+    DeleteVisibilityUnit (UnitSide, UnitIndex);
+    VisibilityLabelArray[UnitSide][UnitIndex]:= TLabel.Create(FieldForm);
+    with VisibilityLabelArray[UnitSide][UnitIndex] do
+    begin
+      Color:= _VisibilityUnitBackgroundColor;
+      Parent:= FieldForm;
+      Font.Size:= _BorderFontSize;
+      Font.Name:= _BorderFontName;
+      Font.Style:= [_BorderFontStyle];
+      //it is always possible to see at least one skyscraper (the highest one) and therefore we
+      //can use zero-visibility as undefined visibility
+      if VisibilityArray[UnitSide][UnitIndex] = 0 then
+        Caption:= ''
+      else
+        Caption:= IntToStr (VisibilityArray[UnitSide][UnitIndex]);
+      case UnitSide of
+      visLeft:
+      begin
+        Left:= _TopLeftFieldBorder.X + _BorderWidth div 2;
+        Top:= _TopLeftFieldBorder.Y + _BorderWidth +
+              (_UnitHeight + _DistanceBeetwenUnits) * UnitIndex;  
+      end;
+      visRight:
+      begin
+        Left:= _TopLeftFieldBorder.X + _BorderWidth + 
+              (_UnitWidth + _DistanceBeetwenUnits) * FieldSize - _DistanceBeetwenUnits;
+        Top:= _TopLeftFieldBorder.Y + _BorderWidth +
+              (_UnitHeight + _DistanceBeetwenUnits) * UnitIndex;  
+      end;
+      visTop:
+      begin
+        Left:= _TopLeftFieldBorder.X + _BorderWidth + _UnitWidth div 3 +
+              (_UnitWidth + _DistanceBeetwenUnits) * UnitIndex - _DistanceBeetwenUnits;
+        Top:= _TopLeftFieldBorder.Y - _BorderWidth div 2;  
+      end;
+      visBot:
+      begin
+        Left:= _TopLeftFieldBorder.X + _BorderWidth + _UnitWidth div 3 +
+              (_UnitWidth + _DistanceBeetwenUnits) * UnitIndex - _DistanceBeetwenUnits;
+        Top:= _TopLeftFieldBorder.Y + _BorderWidth + 
+              (_UnitWidth + _DistanceBeetwenUnits) * FieldSize;  
+      end;
+      end;
+    end;  
+  end;
+  
 var
   itr: shortint;
 begin
@@ -266,7 +271,7 @@ end;
 
 procedure TFieldForm.TestButtonClick(Sender: TObject);
 begin
-  FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, 'vis.txt');
+  FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, 'vis.txt');
   DrawVisibilityBorder(true);
 end;
 
@@ -274,6 +279,26 @@ procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
   FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
   DrawFieldFromUnitsArray;
+end;
+
+procedure TFieldForm.OpenClick(Sender: TObject);
+begin
+  if OpenDialog.Execute then
+  begin
+    FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenDialog.FileName);
+    FieldSizeSpinEdit.Value:= FieldSize;
+    DrawVisibilityBorder (true);
+    DrawEmptyField (true);
+    FieldProcessing.ResetPlacedVariantsArray (FieldSize);
+    FieldProcessing.ResetUnitsStatsArray (FieldSize);
+  end;
+end;
+
+procedure TFieldForm.ClearButtonClick(Sender: TObject);
+begin
+  DrawEmptyField (true);
+  FieldProcessing.ResetPlacedVariantsArray (FieldSize);
+  FieldProcessing.ResetUnitsStatsArray (FieldSize);
 end;
 
 initialization

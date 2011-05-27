@@ -5,17 +5,21 @@ interface
 uses Field;
 
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
-procedure WriteVisibilityArraysToFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
-procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
+procedure WriteVisibilityArraysToFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string);
+procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string);
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
 procedure ResetPlacedVariantsArray (FieldSize: shortint);
+procedure ResetUnitsStatsArray (FieldSize: shortint);
 procedure UpdatePlacedVariantsAccordingToNewUnit (UnitValue, Row, Col, FieldSize: shortint);
 
 implementation
 
 type
   TCheckSet = set of 1..6;
-  TVisibilityRecord = Field.TVisibilityArray;
+  TVisibilityRecord = record
+    FieldSize: shortint;
+    VisibilityArray: Field.TVisibilityArray;
+  end;
   TVisibilityFile = file of TVisibilityRecord;
   TPlacedVariantsArray = array[0..5] of array[0..5] of array[1..6] of boolean;//Containts such types of units
   //that can be placed in the concrete unit
@@ -60,6 +64,14 @@ begin
     for itr2:= 0 to FieldSize - 1 do
       for itr3:= 1 to FieldSize do
         PlacedVariants[itr1][itr2][itr3]:= true;
+end;
+
+procedure ResetUnitsStatsArray (FieldSize: shortint);
+var
+  itr: shortint;
+begin
+  for itr:= 1 to FieldSize do
+    UnitStats[itr]:= 0;
 end;
 
 procedure AddUnitStat (UnitValue, PreviousValue: shortint);
@@ -196,23 +208,29 @@ begin
   end;
 end;
 
-procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
+procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string);
 var
   InputFile: TVisibilityFile;
+  FileRecord: TVisibilityRecord;
 begin
   AssignFile (InputFile, FileName);
   Reset (InputFile);
-  Read (InputFile, VisibilityArray);
+  Read (InputFile, FileRecord);
   Close (InputFile);
+  FieldSize:= FileRecord.FieldSize;
+  VisibilityArray:= FileRecord.VisibilityArray;
 end;
 
-procedure WriteVisibilityArraysToFile (var VisibilityArray: Field.TVisibilityArray; FileName: string);
+procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string);
 var
   OutputFile: TVisibilityFile;
+  FileRecord: TVisibilityRecord;
 begin
+  FileRecord.FieldSize:= FieldSize;
+  FileRecord.VisibilityArray:= VisibilityArray;
   AssignFile (OutputFile, FileName);
   Rewrite (OutputFile);
-  Write (OutputFile, VisibilityArray);
+  Write (OutputFile, FileRecord);
   Close (OutputFile);
 end;
 
@@ -462,6 +480,7 @@ begin
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckIfOnlyOneEmptyUnitOnLine (UnitsArray, FieldSize);
   CheckIfOnlyOneVariantToLocateUnit (UnitsArray, UnitStats, FieldSize);
+  UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
   UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
   UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
 end;
