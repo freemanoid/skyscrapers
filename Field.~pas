@@ -286,6 +286,7 @@ begin
   if OpenDialog.Execute then
   begin
     FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenDialog.FileName);
+    FieldSizeSpinEdit.Value:= FieldSize;
     DrawVisibilityBorder (true);
     DrawEmptyField (true);
     FieldProcessing.ResetPlacedVariantsArray (FieldSize);

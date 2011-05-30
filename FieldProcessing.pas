@@ -2,7 +2,7 @@ unit FieldProcessing;
 
 interface
 
-uses Field;
+uses Field, SysUtils, Dialogs;
 
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string);
@@ -87,7 +87,7 @@ end;
 
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 var
-  itrRow, itrCol, itr: shortint;
+  itrRow, itrCol: shortint;
   CheckSet: TCheckSet;
   MaxFloor: shortint;
   VisibilityCount: shortint;
@@ -215,7 +215,16 @@ var
 begin
   AssignFile (InputFile, FileName);
   Reset (InputFile);
-  Read (InputFile, FileRecord);
+  try
+    Read (InputFile, FileRecord);
+  except
+    on E : EInOutError do 
+    begin
+      ShowMessage ('Тип файла не верный');
+      Close (InputFile);
+      Exit;
+    end;
+  end;
   Close (InputFile);
   FieldSize:= FileRecord.FieldSize;
   VisibilityArray:= FileRecord.VisibilityArray;
@@ -440,6 +449,7 @@ begin
 end;
 
 function IsOneVariantOnLine (PlacedVariants: TPlacedVariantsArray; Row, Col, Length: shortint): shortint;
+//if there is only one variant on a line of variants then returns its index else returns 0
 var
   IsOnlyOneVariant: boolean;
   itrVar: shortint;
@@ -462,27 +472,76 @@ end;
 procedure UpdateUnitsArrayAccordingToPlacedVariants (var UnitsArray: Field.TUnitsArray; 
                                                      PlacedVariants: TPlacedVariantsArray; FieldSize: shortint);
 var
-  itrRow, itrCol: shortint;
+  itrRow, itrCol, VariantResult: shortint;
 begin
   for itrRow:= 0 to FieldSize - 1 do
     for itrCol:= 0 to FieldSize - 1 do
       if (UnitsArray[itrRow][itrCol] = 0) and (IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize) > 0) then
       begin
-        UpdatePlacedVariantsAccordingToNewUnit(IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize), itrRow, itrCol, FieldSize);
-        Field.FieldForm.SetUnit(UnitsArray, IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize), itrRow, itrCol);
+        VariantResult:= IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize);
+        AddUnitStat (VariantResult, UnitsArray[itrRow][itrCol]);
+        UpdatePlacedVariantsAccordingToNewUnit(VariantResult, itrRow, itrCol, FieldSize);
+        Field.FieldForm.SetUnit(UnitsArray, VariantResult, itrRow, itrCol);
       end;
+end;
+
+procedure IfOnlyOnePossiblePlace (var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
+//if there is only one place to set some unit on line (there are no possitive records in PlacedVariants
+//array for this unit)
+var
+  CheckSet: TCheckSet; 
+  itrRow, itrCol, itrVar, itrUnit, itr, NewIndex: shortint; 
+begin
+  for itrRow:= 0 to FieldSize - 1 do
+    for itrUnit:= 1 to FieldSize do
+    begin
+      itr:= 0;
+      for itrCol:= 0 to FieldSize - 1 do
+        if PlacedVariants[itrRow][itrCol][itrUnit] then
+        begin
+          Inc (itr);
+          NewIndex:= itrCol;
+        end;
+      if (itr = 1) and (UnitsArray[itrRow][NewIndex] = 0) then
+      begin
+        UpdatePlacedVariantsAccordingToNewUnit (itrUnit, itrRow, NewIndex, FieldSize);
+        AddUnitStat (itrUnit, UnitsArray[itrRow][NewIndex]);  
+        Field.FieldForm.SetUnit(UnitsArray, itrUnit, itrRow, NewIndex);
+      end;
+    end;
+  for itrCol:= 0 to FieldSize - 1 do
+    for itrUnit:= 1 to FieldSize do
+    begin
+      itr:= 0;
+      for itrRow:= 0 to FieldSize - 1 do
+        if PlacedVariants[itrRow][itrCol][itrUnit] then
+        begin
+          Inc (itr);
+          NewIndex:= itrRow;
+        end;
+      if (itr = 1) and (UnitsArray[NewIndex][itrCol] = 0) then
+      begin
+        UpdatePlacedVariantsAccordingToNewUnit (itrUnit, NewIndex, itrCol, FieldSize);
+        AddUnitStat (itrUnit, UnitsArray[NewIndex][itrCol]);  
+        Field.FieldForm.SetUnit(UnitsArray, itrUnit, NewIndex, itrCol);
+      end;
+    end;
 end;
                                                               
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
+var
+  itr: shortint;
 begin
   ResetPlacedVariantsArray (FieldSize);
   SetPlacedVariantsAccordingToVisibility (VisibilityArray, FieldSize);
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
   CheckIfOnlyOneEmptyUnitOnLine (UnitsArray, FieldSize);
   CheckIfOnlyOneVariantToLocateUnit (UnitsArray, UnitStats, FieldSize);
-  UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
-  UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
-  UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
+  for itr:= 1 to 4 do
+  begin
+    UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
+    IfOnlyOnePossiblePlace (UnitsArray, FieldSize);
+  end;
 end;
 
 end.

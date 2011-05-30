@@ -64,6 +64,7 @@ type
     FieldSize: shortint;
     VisibilityLabelArray: TVisibilityLabelArray;
     VisibilityArray: TVisibilityArray;
+    AllreadySolved: boolean;
   end;
 var
   FieldForm: TFieldForm;
@@ -263,7 +264,7 @@ end;
 
 procedure TFieldForm.CheckButtonClick(Sender: TObject);
 begin
-  if FieldProcessing.IsTrueSolution(UnitsArray, VisibilityArray, FieldSize) then
+  if FieldProcessing.IsTrueSolution(UnitsArray, VisibilityArray, FieldSize) or AllreadySolved then
     ShowMessage ('Решение верно!')
   else
     ShowMessage ('Решение неправильное!');
@@ -279,6 +280,7 @@ procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
   FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
   DrawFieldFromUnitsArray;
+  AllreadySolved:= true;
 end;
 
 procedure TFieldForm.OpenClick(Sender: TObject);
