@@ -278,15 +278,19 @@ end;
 
 procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
-  FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
-  DrawFieldFromUnitsArray;
-  AllreadySolved:= true;
+  if not AllreadySolved then
+  begin
+    FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
+    DrawFieldFromUnitsArray;
+    AllreadySolved:= true;
+  end;
 end;
 
 procedure TFieldForm.OpenClick(Sender: TObject);
 begin
   if OpenDialog.Execute then
   begin
+    AllreadySolved:= false;
     FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenDialog.FileName);
     FieldSizeSpinEdit.Value:= FieldSize;
     DrawVisibilityBorder (true);
@@ -298,6 +302,7 @@ end;
 
 procedure TFieldForm.ClearButtonClick(Sender: TObject);
 begin
+  AllreadySolved:= false;
   DrawEmptyField (true);
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
   FieldProcessing.ResetUnitsStatsArray (FieldSize);
