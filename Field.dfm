@@ -1,6 +1,6 @@
 object FieldForm: TFieldForm
   Left = 309
-  Top = 141
+  Top = 144
   Width = 735
   Height = 605
   Color = clBtnFace
@@ -42,33 +42,33 @@ object FieldForm: TFieldForm
     TabOrder = 1
     OnClick = CheckButtonClick
   end
-  object TestButton: TButton
-    Left = 10
-    Top = 110
-    Width = 111
-    Height = 41
-    Caption = #1047#1072#1075#1088#1091#1079#1082#1072' '#1090#1077#1089#1090#1086#1074#1086#1075#1086' '#1091#1089#1083#1086#1074#1080#1103
-    TabOrder = 2
-    WordWrap = True
-    OnClick = TestButtonClick
-  end
   object AutoSolutionButton: TButton
     Left = 10
-    Top = 160
+    Top = 110
     Width = 96
     Height = 26
     Caption = #1040#1074#1090#1086#1088#1077#1096#1077#1085#1080#1077
-    TabOrder = 3
+    TabOrder = 2
     OnClick = AutoSolutionButtonClick
   end
   object ClearButton: TButton
     Left = 10
-    Top = 195
+    Top = 145
     Width = 96
     Height = 25
     Caption = #1054#1095#1080#1089#1090#1080#1090#1100' '#1087#1086#1083#1077
-    TabOrder = 4
+    TabOrder = 3
     OnClick = ClearButtonClick
+  end
+  object Button1: TButton
+    Left = 10
+    Top = 180
+    Width = 96
+    Height = 41
+    Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' (really)'
+    TabOrder = 4
+    WordWrap = True
+    OnClick = Button1Click
   end
   object MainMenu: TMainMenu
     Top = 520

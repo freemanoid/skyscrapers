@@ -19,27 +19,28 @@ const
   _BorderFontStyle = fsBold;
   _VisibilityUnitBackgroundColor = clInactiveCaptionText;
   _ImageCursor = crHandPoint;
+  _MaxFieldSize = 6;
   visLeft = 1;
   visRight = 2;
   visTop = 3;
   visBot = 4;
   
 type
-  TImageArray = array[0..5, 0..5] of TImage;
-  TUnitsArray = array[0..5, 0..5] of shortint;
-  TVisibilityLabelArray = array[1..4] of array[0..5] of TLabel;
-  TVisibilityArray = array[1..4] of array[0..5] of shortint;
+  TImageArray = array[0..(Field._MaxFieldSize - 1), 0..(Field._MaxFieldSize - 1)] of TImage;
+  TUnitsArray = array[0..(Field._MaxFieldSize - 1), 0..(Field._MaxFieldSize - 1)] of shortint;
+  TVisibilityLabelArray = array[1..4] of array[0..(Field._MaxFieldSize - 1)] of TLabel;
+  TVisibilityArray = array[1..4] of array[0..(Field._MaxFieldSize - 1)] of shortint;
   TFieldForm = class(TForm)
     FieldSizeSpinEdit: TSpinEdit;
     FieldSizeLabel: TLabel;
     CheckButton: TButton;
-    TestButton: TButton;
     AutoSolutionButton: TButton;
     MainMenu: TMainMenu;
     OpenDialog: TOpenDialog;
     File1: TMenuItem;
     Open: TMenuItem;
     ClearButton: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField (DeleteOldImages: boolean);
@@ -51,11 +52,11 @@ type
     function GetRowFromTag (Tag: integer): integer;
     function GetColFromTag (Tag: integer): integer;
     procedure CheckButtonClick(Sender: TObject);
-    procedure TestButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
     procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
     procedure OpenClick(Sender: TObject);
     procedure ClearButtonClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -196,7 +197,7 @@ var
   itr: shortint;
 begin
   if DeleteOldUnits then
-    for itr:= 0 to FieldSize do
+    for itr:= 0 to FieldSize - 1 do
     begin
       DeleteVisibilityUnit (visLeft, itr);
       DeleteVisibilityUnit (visRight, itr);
@@ -270,12 +271,6 @@ begin
     ShowMessage ('Решение неправильное!');
 end;
 
-procedure TFieldForm.TestButtonClick(Sender: TObject);
-begin
-  FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, 'vis.txt');
-  DrawVisibilityBorder(true);
-end;
-
 procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
   if not AllreadySolved then
@@ -306,6 +301,14 @@ begin
   DrawEmptyField (true);
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
   FieldProcessing.ResetUnitsStatsArray (FieldSize);
+end;
+
+procedure TFieldForm.Button1Click(Sender: TObject);
+begin
+  if FieldProcessing.IsTrueSolution(UnitsArray, VisibilityArray, FieldSize) then
+    ShowMessage ('Решение верно!')
+  else
+    ShowMessage ('Решение неправильное!');
 end;
 
 initialization

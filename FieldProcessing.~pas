@@ -5,7 +5,7 @@ interface
 uses Field, SysUtils, Dialogs;
 
 type
-  TPlacedVariantsArray = array[0..5] of array[0..5] of array[1..6] of boolean;//Containts such types of units
+  TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean;//Containts such types of units
   //that can be placed in the concrete unit
 
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
@@ -19,13 +19,14 @@ procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVar
 implementation
 
 type
-  TCheckSet = set of 1..6;
+  TCheckSet = set of 1..Field._MaxFieldSize;
   TVisibilityRecord = record
     FieldSize: shortint;
-    VisibilityArray: Field.TVisibilityArray;
+//    VisibilityArray: Field.TVisibilityArray;
+    VisibilityArray: array[1..4] of array[0..5] of shortint;
   end;
   TVisibilityFile = file of TVisibilityRecord;
-  TUnitStatsArray = array[1..6] of shortint;//Containts the "statistic" information about different types of
+  TUnitStatsArray = array[1..Field._MaxFieldSize] of shortint;//Containts the "statistic" information about different types of
   //units that have been already placed to their places. Array index - unit type, value - number of
   //units of this type
   
@@ -565,7 +566,7 @@ begin
     itrCol:= FieldSize - 1;
     while MaxFloor < FieldSize do
     begin
-      itrVar:= 0;
+      itrVar:= 1;
       while not PlacedVariants[Row][itrCol][itrVar] do
         Inc (itrVar);
       if itrVar > MaxFloor then
@@ -576,11 +577,12 @@ begin
       Dec (itrCol);
     end;
       if VisibilityCount <> Field.FieldForm.VisibilityArray[Field.visRight][Row] then
-    begin
-      Result:= false;
-      Exit;
-    end;
+      begin
+        Result:= false;
+        Exit;
+      end;
   end;
+  Result:= true;
 end;
 
 function IsTrueCheckFilledCol (UnitsArray: Field.TUnitsArray; Col, FieldSize: shortint): boolean;
@@ -628,20 +630,26 @@ function ololoRow (const UnitsArray: Field.TUnitsArray; PlacedVariants: TPlacedV
 var
   itr: shortint;
 begin
+  IsFound:= false;
   if prevValue <> 0 then
     UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, prevValue, Row, Col - 1, FieldSize);
   if Col = FieldSize then //checking exit conditions
     if IsTrueCheckFilledRow (PlacedVariants, Row, FieldSize) then
     begin
-      Result:= PlacedVariants;
-      IsFound:= true;
-      Exit;
+      if Row = FieldSize - 1 then
+      begin
+        IsFound:= true;
+        Result:= PlacedVariants;
+        Exit;
+      end;
+      Result:= ololoRow (UnitsArray, PlacedVariants, IsFound, 0, Row + 1, 0, FieldSize);
     end
     else
     begin
       IsFound:= false;
       Exit;
     end;
+  
   if UnitsArray[Row][Col] = 0 then
   begin
     for itr:= 1 to FieldSize do
@@ -678,21 +686,7 @@ procedure VisibilityBruteforce (VisibilityArray: Field.TVisibilityArray; PlacedV
 var
   itrVis, itr: shortint;
 begin
-  for itrVis:= 1 to FieldSize do
-  begin
-    //we can do not to check max and min visibility cases because we have special procedure for it
-    if (VisibilityArray[Field.visLeft][itrVis] > 1) and (VisibilityArray[Field.visLeft][itrVis] < FieldSize) then
-    begin
-      if SearchOnRowInterval (UnitsArray, FieldSize, itrVis, 1, FieldSize) <> 0 then
-      for itr:= FieldSize downto 1 do  
-      begin
-        
-      end;
-      
-    end
-    else
-      VisibilityArray[Field.visLeft][itrVis]:= 0;
-  end;
+
 end;
                                                               
 procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
@@ -710,11 +704,11 @@ begin
     UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
     IfOnlyOnePossiblePlace (UnitsArray, FieldSize);
   end;
-  {
+  
   IsFound:= false;
   PlacedVariants:= ololoRow (UnitsArray, PlacedVariants, IsFound, 0, 0, 0, FieldSize);
   UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
-  }
+  
 end;
 
 end.
