@@ -5,7 +5,8 @@ program Project;
 uses
   Forms,
   Field in 'Field.pas' {FieldForm},
-  FieldProcessing in 'FieldProcessing.pas';
+  FieldProcessing in 'FieldProcessing.pas',
+  FieldGeneration in 'FieldGeneration.pas';
 
 {$R *.res}
 

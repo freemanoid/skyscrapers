@@ -19,7 +19,7 @@ const
   _BorderFontStyle = fsBold;
   _VisibilityUnitBackgroundColor = clInactiveCaptionText;
   _ImageCursor = crHandPoint;
-  _MaxFieldSize = 7;
+  _MaxFieldSize = 6;
   visLeft = 1;
   visRight = 2;
   visTop = 3;
@@ -73,7 +73,7 @@ var
 implementation
 
 uses
-  FieldProcessing;
+  FieldProcessing, FieldGeneration;
 
 {$R *.dfm}
 
@@ -89,6 +89,7 @@ begin
   DrawEmptyField (false);
   DrawVisibilityBorder (false);
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
+  FieldGeneration.UnitsArrayGeneration (1);
 end;
 
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: shortint);
@@ -106,13 +107,16 @@ begin
           (_UnitWidth + _DistanceBeetwenUnits) * Col;
     Top:= _TopLeftFieldBorder.Y + _BorderWidth +
          (_UnitHeight + _DistanceBeetwenUnits) * Row - _FloorIncrement * UnitNumber;
+    if (UnitNumber > 6) or (UnitNumber < 0) then
+      ShowMessage ('Ошибка: высота небоскрёба не может быть равной ' + IntToStr (UnitNumber) + ' (должна быть от 0 до 6)');
     Picture.LoadFromFile('images\' + IntToStr (UnitNumber) + '.bmp'); //UnitNumber must be in 0-6
   end;
 end;
 
 procedure TFieldForm.DeleteUnit (Row, Col: shortint);
 begin
-  FreeAndNil (ImageArray[Row, Col]);
+  //FreeAndNil (ImageArray[Row, Col]);
+  ImageArray[Row, Col].Free;
 end;
 
 procedure TFieldForm.DrawFieldFromUnitsArray;
@@ -128,12 +132,12 @@ procedure TFieldForm.DrawEmptyField (DeleteOldImages: boolean);
 var
   itrRow, itrCol, itr: smallint;
 begin
-  if DeleteOldImages then
+  {if DeleteOldImages then
     for itr:= 0 to FieldSize do
     begin
       DeleteUnit (itr, FieldSize);  
       DeleteUnit (FieldSize, itr);
-    end;
+    end;}
   for itrRow:= 0 to FieldSize - 1 do
     for itrCol:= 0 to FieldSize - 1 do
       DrawUnit (0, itrRow, itrCol);  

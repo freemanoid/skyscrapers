@@ -7,6 +7,8 @@ uses Field, SysUtils, Dialogs;
 type
   TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean;//Containts such types of units
   //that can be placed in the concrete unit
+  TCheckSet = set of 1..Field._MaxFieldSize;
+  
 
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string);
@@ -15,11 +17,12 @@ procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray:
 procedure ResetPlacedVariantsArray (FieldSize: shortint);
 procedure ResetUnitsStatsArray (FieldSize: shortint);
 procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint);
+procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint);
+procedure SetClear (var SomeSet: TCheckSet);
 
 implementation
 
 type
-  TCheckSet = set of 1..Field._MaxFieldSize;
   TVisibilityRecord = record
     FieldSize: shortint;
     VisibilityArray: Field.TVisibilityArray;
@@ -87,6 +90,11 @@ begin
   SomeSet:= [1..MaxValue];
 end;
 
+procedure SetClear (var SomeSet: TCheckSet);
+begin
+  SomeSet:= [];
+end;
+
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 var
   itrRow, itrCol: shortint;
@@ -105,7 +113,7 @@ begin
       if not (UnitsArray[itrRow][itrCol] in CheckSet) then
       begin
         IsTrueSolution:= false;
-        exit
+        Exit
       end
       else
         CheckSet:= CheckSet - [UnitsArray[itrRow][itrCol]]
@@ -120,7 +128,7 @@ begin
       if not (UnitsArray[itrRow][itrCol] in CheckSet) then
       begin
         IsTrueSolution:= false;
-        exit
+        Exit
       end
       else
         CheckSet:= CheckSet - [UnitsArray[itrRow][itrCol]]
@@ -143,7 +151,7 @@ begin
           if (MaxFloor = FieldSize) and (VisibilityCount <> VisibilityArray[visLeft][itrRow]) then
           begin
             IsTrueSolution:= false;
-            exit
+            Exit
           end;
         end;
     end;
@@ -156,17 +164,17 @@ begin
       MaxFloor:= 0;
       VisibilityCount:= 0;
       for itrCol:= FieldSize - 1 downto 0 do
-        if UnitsArray[itrRow][itrCol] < MaxFloor then
+        if UnitsArray[itrRow][itrCol] > MaxFloor then
         begin
           MaxFloor:= UnitsArray[itrRow][itrCol];
           Inc (VisibilityCount);
-          if (MaxFloor = FieldSize) and (VisibilityCount <> VisibilityArray[visRight][itrCol]) then
+          if (MaxFloor = FieldSize) and (VisibilityCount <> VisibilityArray[visRight][itrRow]) then
           begin
             IsTrueSolution:= false;
-            exit
+            Exit
           end;
         end;
-    end;
+    end;                                                       
   end;
   //Column from top
   for itrCol:= 0 to FieldSize - 1 do
@@ -176,14 +184,14 @@ begin
       MaxFloor:= 0;
       VisibilityCount:= 0;
       for itrRow:= 0 to FieldSize - 1 do
-        if UnitsArray[itrRow][itrCol] < MaxFloor then
+        if UnitsArray[itrRow][itrCol] > MaxFloor then
         begin
           MaxFloor:= UnitsArray[itrRow][itrCol];
           Inc (VisibilityCount);
-          if (MaxFloor = FieldSize) and (VisibilityCount <> VisibilityArray[visTop][itrRow]) then
+          if (MaxFloor = FieldSize) and (VisibilityCount <> VisibilityArray[visTop][itrCol]) then
           begin
             IsTrueSolution:= false;
-            exit
+            Exit
           end;
         end;
     end;
@@ -196,14 +204,14 @@ begin
       MaxFloor:= 0;
       VisibilityCount:= 0;
       for itrRow:= FieldSize - 1 downto 0 do
-        if UnitsArray[itrRow][itrCol] < MaxFloor then
+        if UnitsArray[itrRow][itrCol] > MaxFloor then
         begin
           MaxFloor:= UnitsArray[itrRow][itrCol];
           Inc (VisibilityCount);
           if (MaxFloor = FieldSize) and (VisibilityCount <> VisibilityArray[visBot][itrCol]) then
           begin
             IsTrueSolution:= false;
-            exit
+            Exit
           end;
         end;
     end;
@@ -222,7 +230,7 @@ begin
   except
     on E : EInOutError do 
     begin
-      ShowMessage ('Тип файла не верный');
+      ShowMessage ('Формат файла не верный');
       Close (InputFile);
       Exit;
     end;
@@ -530,10 +538,66 @@ begin
     end;
 end;
 
+function IsStillTrueCol (PlacedVariants: TPlacedVariantsArray; Row, Col, FieldSize: shortint): boolean;
+var
+   itrVar, itrRow, MaxFloor, VisibilityCount: shortint;
+begin
+  Result:= true;
+  if Field.FieldForm.VisibilityArray[Field.visTop][Col] <> 0 then
+  begin
+    MaxFloor:= 0;
+    VisibilityCount:= 0;
+    for itrRow:= 0 to Row do
+    begin
+      itrVar:= 1;
+      while not PlacedVariants[itrRow][Col][itrVar] do
+        Inc (itrVar);
+      if itrVar > MaxFloor then
+      begin
+        MaxFloor:= itrVar;
+        Inc (VisibilityCount);
+      end;
+    end;
+    if (VisibilityCount > Field.FieldForm.VisibilityArray[Field.visTop][Col]) or
+      ((VisibilityCount < Field.FieldForm.VisibilityArray[Field.visTop][Col]) and (MaxFloor = FieldSize)) or
+      ((VisibilityCount = Field.FieldForm.VisibilityArray[Field.visTop][Col]) and (MaxFloor < FieldSize)) then
+    begin
+      Result:= false;
+      Exit;
+    end;
+  end;
+  
+  if Row = FieldSize - 1 then
+    if Field.FieldForm.VisibilityArray[Field.visBot][Col] <> 0 then
+    begin
+      MaxFloor:= 0;
+      VisibilityCount:= 0;
+      itrRow:= FieldSize - 1;
+      while MaxFloor < FieldSize do
+      begin
+        itrVar:= 1;
+        while not PlacedVariants[itrRow][Col][itrVar] do
+          Inc (itrVar);
+        if itrVar > MaxFloor then
+        begin
+          MaxFloor:= itrVar;
+          Inc (VisibilityCount);
+        end;
+        Dec (itrRow);
+      end;
+        if VisibilityCount <> Field.FieldForm.VisibilityArray[Field.visBot][Col] then
+        begin
+          Result:= false;
+          Exit;
+        end;
+    end;
+end;
+
 function IsTrueCheckFilledRow (PlacedVariants: TPlacedVariantsArray; Row, FieldSize: shortint): boolean;
 var
   itrVar, itrCol, MaxFloor, VisibilityCount: shortint;
 begin
+  Result:= true;
   if Field.FieldForm.VisibilityArray[Field.visLeft][Row] <> 0 then
   begin
     MaxFloor:= 0;
@@ -581,51 +645,18 @@ begin
         Exit;
       end;
   end;
-  Result:= true;
-end;
 
-function IsTrueCheckFilledCol (UnitsArray: Field.TUnitsArray; Col, FieldSize: shortint): boolean;
-var
-  itrRow, MaxFloor, VisibilityCount: shortint;
-begin
-  MaxFloor:= 0;
-  VisibilityCount:= 0;
-  itrRow:= 0;
-  while MaxFloor < FieldSize do
+  for itrCol:= 0 to FieldSize - 1 do
   begin
-    if UnitsArray[itrRow][Col] > MaxFloor then
-    begin
-      MaxFloor:= UnitsArray[itrRow][Col];
-      Inc (VisibilityCount);
-    end;
-    Inc (itrRow);
-  end;
-  if VisibilityCount <> Field.FieldForm.VisibilityArray[Field.visTop][Col] then
-  begin
-    Result:= false;
-    Exit;
+    if not Result then
+      Break;
+    Result:= IsStillTrueCol (PlacedVariants, Row, itrCol, FieldSize);
   end;
   
-  MaxFloor:= 0;
-  VisibilityCount:= 0;
-  itrRow:= FieldSize - 1;
-  while MaxFloor < FieldSize do
-  begin
-    if UnitsArray[itrRow][Col] > MaxFloor then
-    begin
-      MaxFloor:= UnitsArray[itrRow][Col];
-      Inc (VisibilityCount);
-    end;
-    Dec (itrRow);
-  end;
-    if VisibilityCount <> Field.FieldForm.VisibilityArray[Field.visBot][Col] then
-  begin
-    Result:= false;
-    Exit;
-  end;
 end;
 
-function ololoRow (const UnitsArray: Field.TUnitsArray; PlacedVariants: TPlacedVariantsArray; var IsFound: boolean; prevValue, Row, Col, FieldSize: shortint): TPlacedVariantsArray; 
+function BruteforceRows (const UnitsArray: Field.TUnitsArray; PlacedVariants: TPlacedVariantsArray; 
+var IsFound: boolean; prevValue, Row, Col, FieldSize: shortint): TPlacedVariantsArray;
 var
   itr: shortint;
 begin
@@ -641,22 +672,23 @@ begin
         Result:= PlacedVariants;
         Exit;
       end;
-      Result:= ololoRow (UnitsArray, PlacedVariants, IsFound, 0, Row + 1, 0, FieldSize);
+      Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, 0, Row + 1, 0, FieldSize);
+      Exit;
     end
     else
     begin
       IsFound:= false;
       Exit;
     end;
-  
+
   if UnitsArray[Row][Col] = 0 then
   begin
     for itr:= 1 to FieldSize do
       if PlacedVariants[Row][Col][itr] and not IsFound then
-        Result:= ololoRow (UnitsArray, PlacedVariants, IsFound, itr, Row, Col + 1, FieldSize);
+        Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, itr, Row, Col + 1, FieldSize);
   end
   else
-    Result:= ololoRow (UnitsArray, PlacedVariants, IsFound, 0, Row, Col + 1, FieldSize);  
+    Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, 0, Row, Col + 1, FieldSize);  
 end;
 
 procedure VisibilityBruteforce (VisibilityArray: Field.TVisibilityArray; PlacedVariants: TPlacedVariantsArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
@@ -703,11 +735,8 @@ begin
     UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
     IfOnlyOnePossiblePlace (UnitsArray, FieldSize);
   end;
-  
-  IsFound:= false;
-  PlacedVariants:= ololoRow (UnitsArray, PlacedVariants, IsFound, 0, 0, 0, FieldSize);
+  PlacedVariants:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, 0, 0, 0, FieldSize);
   UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
-  
 end;
 
 end.
