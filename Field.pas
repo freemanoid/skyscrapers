@@ -24,6 +24,7 @@ const
   visRight = 2;
   visTop = 3;
   visBot = 4;
+  _PicturesDir = 'images\';
   
 type
   TImageArray = array[0..(Field._MaxFieldSize - 1), 0..(Field._MaxFieldSize - 1)] of TImage;
@@ -41,22 +42,27 @@ type
     Open: TMenuItem;
     ClearButton: TButton;
     Button1: TButton;
+    NewFieldButton: TButton;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
-    procedure DrawEmptyField (DeleteOldImages: boolean);
+    procedure DrawEmptyField;
     procedure DrawFieldFromUnitsArray;
     procedure FieldSizeSpinEditChange(Sender: TObject);
-    procedure DeleteUnit (Row, Col: shortint);
-    procedure DrawVisibilityBorder (DeleteOldUnits: boolean);
+    procedure HideUnit (Row, Col: shortint);
+    procedure DrawVisibilityBorder;
+    procedure ClearTheField;
     procedure UnitClick(Sender: TObject);
-    function GetRowFromTag (Tag: integer): integer;
-    function GetColFromTag (Tag: integer): integer;
     procedure CheckButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
     procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
     procedure OpenClick(Sender: TObject);
     procedure ClearButtonClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure HideVisibilityUnit (UnitSide, UnitIndex: shortint);
+    procedure ClearVisibilityBorder;
+    procedure ClearUnitsArray;
+    procedure ClearVisibilityArray;
+    procedure NewFieldButtonClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -85,9 +91,15 @@ end;
 procedure TFieldForm.FormCreate(Sender: TObject);
 begin
   //variables initializate
+  //all field objects initialization
+  FieldSize:= _MaxFieldSize;
+  DrawEmptyField;
+  ClearTheField;
+  DrawVisibilityBorder;
+  ClearVisibilityBorder;
   FieldSize:= _DefaultFieldSize;
-  DrawEmptyField (false);
-  DrawVisibilityBorder (false);
+  DrawEmptyField;
+  DrawVisibilityBorder;
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
 end;
 
@@ -106,16 +118,17 @@ begin
           (_UnitWidth + _DistanceBeetwenUnits) * Col;
     Top:= _TopLeftFieldBorder.Y + _BorderWidth +
          (_UnitHeight + _DistanceBeetwenUnits) * Row - _FloorIncrement * UnitNumber;
-    if (UnitNumber > 6) or (UnitNumber < 0) then
-      ShowMessage ('Ошибка: высота небоскрёба не может быть равной ' + IntToStr (UnitNumber) + ' (должна быть от 0 до 6)');
-    Picture.LoadFromFile('images\' + IntToStr (UnitNumber) + '.bmp'); //UnitNumber must be in 0-6
+    if (UnitNumber > _MaxFieldSize) or (UnitNumber < 0) then
+      ShowMessage (Format ('Ошибка: высота небоскрёба не может быть равной %d (должна быть от 0 до 6)', [UnitNumber]));
+    Picture.LoadFromFile (ExtractFilePath (Application.ExeName) + _PicturesDir + IntToStr (UnitNumber) + '.bmp'); //UnitNumber must be in 0-6
+    Show;
   end;
 end;
 
-procedure TFieldForm.DeleteUnit (Row, Col: shortint);
+procedure TFieldForm.HideUnit (Row, Col: shortint);
 begin
-  //FreeAndNil (ImageArray[Row, Col]);
-  ImageArray[Row, Col].Free;
+    ImageArray[Row][Col].Hide;
+    UnitsArray[Row][Col]:= 0;
 end;
 
 procedure TFieldForm.DrawFieldFromUnitsArray;
@@ -127,31 +140,36 @@ begin
       DrawUnit (UnitsArray[itrRow][itrCol], itrRow, itrCol);  
 end;
 
-procedure TFieldForm.DrawEmptyField (DeleteOldImages: boolean);
+procedure TFieldForm.ClearTheField;
+var
+  itrRow, itrCol: smallint;
+begin
+  ClearUnitsArray;
+  for itrRow:= 0 to FieldSize - 1 do
+    for itrCol:= 0 to FieldSize - 1 do
+      HideUnit (itrRow, itrCol);  
+end;
+
+procedure TFieldForm.DrawEmptyField;
 var
   itrRow, itrCol, itr: smallint;
 begin
-  {if DeleteOldImages then
-    for itr:= 0 to FieldSize do
-    begin
-      DeleteUnit (itr, FieldSize);  
-      DeleteUnit (FieldSize, itr);
-    end;}
   for itrRow:= 0 to FieldSize - 1 do
-    for itrCol:= 0 to FieldSize - 1 do
-      DrawUnit (0, itrRow, itrCol);  
+      for itrCol:= 0 to FieldSize - 1 do
+        DrawUnit (0, itrRow, itrCol);  
 end;
 
-procedure TFieldForm.DrawVisibilityBorder (DeleteOldUnits: boolean);
-  procedure DeleteVisibilityUnit (UnitSide, UnitIndex: shortint);
-    begin
-      FreeAndNil (VisibilityLabelArray[UnitSide][UnitIndex]);  
-    end;
-    
+procedure TFieldForm.HideVisibilityUnit (UnitSide, UnitIndex: shortint);
+begin
+  VisibilityArray[UnitSide][UnitIndex]:= 0;
+  VisibilityLabelArray[UnitSide][UnitIndex].Hide;
+end;
+
+procedure TFieldForm.DrawVisibilityBorder;  
   procedure DrawVisibilityBorderUnit (UnitSide: shortint; UnitIndex: shortint);
   begin
-    DeleteVisibilityUnit (UnitSide, UnitIndex);
-    VisibilityLabelArray[UnitSide][UnitIndex]:= TLabel.Create(FieldForm);
+    if VisibilityLabelArray[UnitSide][UnitIndex] = nil then
+      VisibilityLabelArray[UnitSide][UnitIndex]:= TLabel.Create(FieldForm);
     with VisibilityLabelArray[UnitSide][UnitIndex] do
     begin
       Color:= _VisibilityUnitBackgroundColor;
@@ -193,20 +211,13 @@ procedure TFieldForm.DrawVisibilityBorder (DeleteOldUnits: boolean);
               (_UnitWidth + _DistanceBeetwenUnits) * FieldSize;  
       end;
       end;
+      Show;
     end;  
   end;
   
 var
   itr: shortint;
 begin
-  if DeleteOldUnits then
-    for itr:= 0 to FieldSize - 1 do
-    begin
-      DeleteVisibilityUnit (visLeft, itr);
-      DeleteVisibilityUnit (visRight, itr);
-      DeleteVisibilityUnit (visTop, itr);
-      DeleteVisibilityUnit (visBot, itr);
-    end;
   for itr:= 0 to FieldSize - 1 do
   begin
     DrawVisibilityBorderUnit (visLeft, itr);
@@ -216,35 +227,69 @@ begin
   end; 
 end;
 
+procedure TFieldForm.ClearVisibilityBorder;
+var
+  itr: shortint;
+begin
+  ClearVisibilityArray;
+  for itr:= 0 to FieldSize - 1 do
+      begin
+        HideVisibilityUnit (visLeft, itr);
+        HideVisibilityUnit (visRight, itr);
+        HideVisibilityUnit (visTop, itr);
+        HideVisibilityUnit (visBot, itr);
+      end;
+end;
+
+procedure TFieldForm.ClearVisibilityArray;
+var
+  itrSide, itrVis: shortint;
+begin
+  for itrSide:= visLeft to VisBot do
+    for itrVis:= 0 to FieldSize - 1 do
+      VisibilityArray[itrSide][itrVis]:= 0; 
+end;
+
+procedure TFieldForm.ClearUnitsArray;
+var
+  itrRow, itrCol: shortint;
+begin
+  for itrRow:= 0 to FieldSize - 1 do
+      for itrCol:= 0 to FieldSize - 1 do
+        UnitsArray[itrRow][itrCol]:= 0;  
+end;
+    
 procedure TFieldForm.FieldSizeSpinEditChange(Sender: TObject);
 begin
   if FieldSizeSpinEdit.Value < FieldSize then
   begin
+    ClearTheField;
+    ClearVisibilityBorder;
     FieldSize:= FieldSizeSpinEdit.Value;
-    DrawVisibilityBorder (true);
-    DrawEmptyField (true);
+    DrawVisibilityBorder;
+    DrawEmptyField;
   end
   else
   begin
-    FieldSize:= FieldSizeSpinEdit.Value; 
-    DrawVisibilityBorder (false);
-    DrawEmptyField (false);
+    ClearTheField;
+    FieldSize:= FieldSizeSpinEdit.Value;
+    ClearVisibilityBorder;
+    DrawVisibilityBorder;
+    DrawEmptyField;
   end;
 end;
 
-function TFieldForm.GetRowFromTag (Tag: integer): integer;
-begin
-  GetRowFromTag:= Tag div 10;
-end;
-
-function TFieldForm.GetColFromTag (Tag: integer): integer;
-begin
-  GetColFromTag:= Tag mod 10;
-end;
-
-
-
 procedure TFieldForm.UnitClick (Sender: TObject);
+  function GetRowFromTag (Tag: integer): integer;
+  begin
+    GetRowFromTag:= Tag div 10;
+  end;
+
+  function GetColFromTag (Tag: integer): integer;
+  begin
+    GetColFromTag:= Tag mod 10;
+  end;
+
 var
   Row, Col: shortint;
   SenderImage: TImage;
@@ -285,14 +330,19 @@ begin
 end;
 
 procedure TFieldForm.OpenClick(Sender: TObject);
+var
+  TempVisibilityArray: TVisibilityArray;
 begin
   if OpenDialog.Execute then
   begin
     AllreadySolved:= false;
+    ClearVisibilityBorder;
+    ClearTheField;
     FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenDialog.FileName);
+    TempVisibilityArray:= VisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
     FieldSizeSpinEdit.Value:= FieldSize;
-    DrawVisibilityBorder (true);
-    DrawEmptyField (true);
+    VisibilityArray:= TempVisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
+    DrawVisibilityBorder;
     FieldProcessing.ResetPlacedVariantsArray (FieldSize);
     FieldProcessing.ResetUnitsStatsArray (FieldSize);
   end;
@@ -301,7 +351,7 @@ end;
 procedure TFieldForm.ClearButtonClick(Sender: TObject);
 begin
   AllreadySolved:= false;
-  DrawEmptyField (true);
+  DrawEmptyField;
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
   FieldProcessing.ResetUnitsStatsArray (FieldSize);
 end;
@@ -312,6 +362,15 @@ begin
     ShowMessage ('Решение верно!')
   else
     ShowMessage ('Решение неправильное!');
+end;
+
+procedure TFieldForm.NewFieldButtonClick(Sender: TObject);
+begin
+  ClearTheField;
+  UnitsArray:= FieldGeneration.UnitsArrayGeneration (FieldSize);
+  VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray(UnitsArray, FieldSize);
+  DrawFieldFromUnitsArray;
+  DrawVisibilityBorder;
 end;
 
 initialization

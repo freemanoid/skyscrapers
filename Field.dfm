@@ -1,8 +1,8 @@
 object FieldForm: TFieldForm
-  Left = 309
-  Top = 144
-  Width = 735
-  Height = 605
+  Left = 278
+  Top = -1
+  Width = 866
+  Height = 754
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -70,8 +70,17 @@ object FieldForm: TFieldForm
     WordWrap = True
     OnClick = Button1Click
   end
+  object NewFieldButton: TButton
+    Left = 10
+    Top = 240
+    Width = 96
+    Height = 25
+    Caption = #1053#1086#1074#1086#1077' '#1087#1086#1083#1077
+    TabOrder = 5
+    OnClick = NewFieldButtonClick
+  end
   object MainMenu: TMainMenu
-    Top = 520
+    Top = 670
     object File1: TMenuItem
       Caption = #1060#1072#1081#1083
       object Open: TMenuItem
@@ -81,8 +90,9 @@ object FieldForm: TFieldForm
     end
   end
   object OpenDialog: TOpenDialog
-    Filter = '*.txt'
+    Filter = '*.sks'
+    InitialDir = 'cond'
     Left = 30
-    Top = 520
+    Top = 670
   end
 end
