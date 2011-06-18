@@ -1,19 +1,34 @@
 [Closed Files]
-File_0=SourceModule,'C:\repo\Field.pas',0,1,261,20,274,1,1
-File_1=SourceModule,'C:\repo\FieldProcessing.pas',0,1,77,1,96,0,0
-File_2=SourceModule,'C:\repo\FieldGeneration.pas',0,1,61,26,86,0,0
-File_3=SourceModule,'c:\program files\borland\delphi7\source\vcl\Forms.pas',0,1,6939,1,6960,0,0
-File_4=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\system.pas',0,1,11643,1,11661,0,0
-File_5=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\sysutils.pas',0,1,4592,1,4612,0,0
-File_6=SourceModule,'c:\program files\borland\delphi7\source\vcl\Controls.pas',0,1,3713,1,3730,0,0
-File_7=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\GETMEM.INC',0,1,959,1,989,0,0
-File_8=SourceModule,'c:\program files\borland\delphi7\source\vcl\Dialogs.pas',0,1,1863,1,1880,0,0
-File_9=SourceModule,'c:\program files\borland\delphi7\source\vcl\ExtCtrls.pas',0,1,2778,40,2792,0,0
+File_0=SourceModule,'c:\program files\borland\delphi7\source\vcl\Forms.pas',0,1,6939,1,6960,0,0
+File_1=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\system.pas',0,1,11643,1,11661,0,0
+File_2=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\sysutils.pas',0,1,4592,1,4612,0,0
+File_3=SourceModule,'c:\program files\borland\delphi7\source\vcl\Controls.pas',0,1,3713,1,3730,0,0
+File_4=SourceModule,'c:\program files\borland\delphi7\source\rtl\Sys\GETMEM.INC',0,1,959,1,989,0,0
+File_5=SourceModule,'c:\program files\borland\delphi7\source\vcl\Dialogs.pas',0,1,1863,1,1880,0,0
+File_6=SourceModule,'c:\program files\borland\delphi7\source\vcl\ExtCtrls.pas',0,1,2778,40,2792,0,0
 
 [Modules]
-Module0=c:\repo\Project.dpr
-Count=1
+Module0=C:\repo\FieldProcessing.pas
+Module1=C:\repo\FieldGeneration.pas
+Module2=C:\repo\Field.pas
+Module3=c:\repo\Project.dpr
+Count=4
 EditWindowCount=1
+
+[C:\repo\FieldProcessing.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\repo\FieldGeneration.pas]
+ModuleType=SourceModule
+FormState=0
+FormOnTop=0
+
+[C:\repo\Field.pas]
+ModuleType=SourceModule
+FormState=1
+FormOnTop=1
 
 [c:\repo\Project.dpr]
 ModuleType=SourceModule
@@ -29,34 +44,56 @@ FormState=0
 FormOnTop=0
 
 [EditWindow0]
-ViewCount=1
-CurrentView=0
+ViewCount=4
+CurrentView=2
 View0=0
+View1=1
+View2=2
+View3=3
 CodeExplorer=CodeExplorer@EditWindow0
 MessageView=MessageView@EditWindow0
 Create=1
 Visible=1
 State=0
-Left=304
-Top=137
+Left=197
+Top=81
 Width=971
 Height=494
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=963
 ClientHeight=460
-LeftPanelSize=140
+LeftPanelSize=191
 LeftPanelClients=CodeExplorer@EditWindow0
 LeftPanelData=000004000000000000000000000000000000000000000000000100000000000000000C000000436F64654578706C6F726572FFFFFFFF
 RightPanelSize=0
 BottomPanelSize=0
-BottomPanelClients=MessageView@EditWindow0
-BottomPanelData=00000400010000000B0000004D657373616765566965770000000000000000000000000000000000FFFFFFFF
 
 [View0]
 Module=c:\repo\Project.dpr
-CursorX=1
-CursorY=1
+CursorX=11
+CursorY=9
+TopLine=1
+LeftCol=1
+
+[View1]
+Module=C:\repo\Field.pas
+CursorX=84
+CursorY=383
+TopLine=367
+LeftCol=1
+
+[View2]
+Module=C:\repo\FieldProcessing.pas
+CursorX=9
+CursorY=5
+TopLine=1
+LeftCol=1
+
+[View3]
+Module=C:\repo\FieldGeneration.pas
+CursorX=79
+CursorY=42
 TopLine=1
 LeftCol=1
 
@@ -166,7 +203,7 @@ ClientHeight=60
 
 [PropertyInspector]
 Create=1
-Visible=0
+Visible=1
 State=0
 Left=0
 Top=112
@@ -181,7 +218,7 @@ LRDockWidth=190
 Dockable=1
 SplitPos=121
 ArrangeBy=Name
-SelectedItem=
+SelectedItem=Caption
 ExpandedItems=Constraints
 HiddenCategories=
 
@@ -221,6 +258,22 @@ ClientWidth=182
 ClientHeight=228
 TBDockHeight=254
 LRDockWidth=190
+Dockable=1
+
+[DebugLogView]
+Create=1
+Visible=0
+State=0
+Left=507
+Top=246
+Width=417
+Height=291
+MaxLeft=-1
+MaxTop=-1
+ClientWidth=409
+ClientHeight=265
+TBDockHeight=291
+LRDockWidth=417
 Dockable=1
 
 [ToDo List]
@@ -269,31 +322,31 @@ Visible=1
 State=0
 Left=0
 Top=12
-Width=140
+Width=191
 Height=448
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=140
+ClientWidth=191
 ClientHeight=448
 TBDockHeight=305
-LRDockWidth=140
+LRDockWidth=191
 Dockable=1
 
 [MessageView@EditWindow0]
 Create=1
 Visible=0
 State=0
-Left=-96
-Top=-523
-Width=443
-Height=85
+Left=12
+Top=0
+Width=570
+Height=159
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=443
-ClientHeight=85
-TBDockHeight=85
+ClientWidth=562
+ClientHeight=133
+TBDockHeight=48
 LRDockWidth=443
-Dockable=1
+Dockable=0
 
 [DockHosts]
 DockHostCount=0
