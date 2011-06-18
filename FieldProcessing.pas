@@ -4,6 +4,10 @@ interface
 
 uses Field, SysUtils, Dialogs;
 
+const
+  ConditionExtension = 'skc';
+  FieldExtension = 'skf';
+
 type
   TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean;//Containts such types of units
   //that can be placed in the concrete unit

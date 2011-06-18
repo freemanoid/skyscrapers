@@ -109,6 +109,7 @@ begin
   DrawEmptyField;
   DrawVisibilityBorder;
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
+  OpenDialog.DefaultExt:= FieldProcessing.ConditionExtension + FieldProcessing.FieldExtension;
 end;
 
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: shortint);
