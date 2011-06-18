@@ -461,8 +461,8 @@ begin
   RemoveAllPlacedVariantsExcept (PlacedVariants, UnitValue, Row, Col, FieldSize);
 end;
 
-procedure UpdateUnitsArrayAccordingToPlacedVariants (var UnitsArray: Field.TUnitsArray; 
-                                                     PlacedVariants: TPlacedVariantsArray; FieldSize: shortint);
+function UpdateUnitsArrayAccordingToPlacedVariants (var UnitsArray: Field.TUnitsArray;
+                                                     var PlacedVariants: TPlacedVariantsArray; FieldSize: shortint): shortint; //returns number of units that was set
                                                      
   function IsOneVariantOnLine (PlacedVariants: TPlacedVariantsArray; Row, Col, Length: shortint): shortint;
   //if there is only one variant on a line of variants then returns its index else returns 0
@@ -488,6 +488,7 @@ procedure UpdateUnitsArrayAccordingToPlacedVariants (var UnitsArray: Field.TUnit
 var
   itrRow, itrCol, VariantResult: shortint;
 begin
+  Result:= 0;
   for itrRow:= 0 to FieldSize - 1 do
     for itrCol:= 0 to FieldSize - 1 do
       if (UnitsArray[itrRow][itrCol] = 0) and (IsOneVariantOnLine (PlacedVariants, itrRow, itrCol, FieldSize) > 0) then
@@ -496,6 +497,7 @@ begin
         AddUnitStat (VariantResult, UnitsArray[itrRow][itrCol]);
         UpdatePlacedVariantsAccordingToNewUnit(PlacedVariants, VariantResult, itrRow, itrCol, FieldSize);
         Field.FieldForm.SetUnit(UnitsArray, VariantResult, itrRow, itrCol);
+        Inc (Result);
       end;
 end;
 
