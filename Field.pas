@@ -48,6 +48,7 @@ type
     OpenField: TMenuItem;
     Exit: TMenuItem;
     SaveDialog: TSaveDialog;
+    Label1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField;
@@ -378,6 +379,9 @@ begin
   FieldGeneration.GenerateVisibilityArray(VisibilityArray, FieldSize);
   DrawEmptyField;
   DrawVisibilityBorder;
+  Label1.Caption:= IntToStr(CalculateDiffucultyScores(VisibilityArray, FieldSize));
+end;
+
 procedure TFieldForm.SaveConditionClick(Sender: TObject);
 begin
   if SaveDialog.Execute then
