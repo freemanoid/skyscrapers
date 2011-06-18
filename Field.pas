@@ -373,10 +373,10 @@ end;
 
 procedure TFieldForm.NewFieldButtonClick(Sender: TObject);
 begin
+  AllreadySolved:= false;
   ClearTheField;
-  UnitsArray:= FieldGeneration.UnitsArrayGeneration (FieldSize);
-  VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray(UnitsArray, FieldSize);
-  DrawFieldFromUnitsArray;
+  FieldGeneration.GenerateVisibilityArray(VisibilityArray, FieldSize);
+  DrawEmptyField;
   DrawVisibilityBorder;
 procedure TFieldForm.SaveConditionClick(Sender: TObject);
 begin

@@ -5,8 +5,7 @@ interface
 uses
   Field, SysUtils, Dialogs;
 
-function UnitsArrayGeneration (FieldSize: shortint): Field.TUnitsArray;
-function GetVisibilityArrayFromUnitsArray (UnitsArray: Field.TUnitsArray; FieldSize: shortint): Field.TVisibilityArray;
+function GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): shortint;
 
 implementation
 
@@ -26,7 +25,7 @@ begin
   end;
 end;
   
-function UnitsArrayGeneration (FieldSize: shortint): Field.TUnitsArray;
+function GenerateUnitsArray(FieldSize: shortint): Field.TUnitsArray;
   procedure GenerateRow (var UnitsArray: Field.TUnitsArray; Row, FieldSize: shortint);
   var
     itrCol: shortint;
@@ -178,6 +177,11 @@ begin
           Break;
       end;
   end;
+end;
+
+function GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): shortint;
+begin
+  VisibilityArray:= GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
 end;
 
 end.
