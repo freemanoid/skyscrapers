@@ -43,6 +43,11 @@ type
     ClearButton: TButton;
     Button1: TButton;
     NewFieldButton: TButton;
+    SaveCondition: TMenuItem;
+    SaveField: TMenuItem;
+    OpenField: TMenuItem;
+    Exit: TMenuItem;
+    SaveDialog: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField;
@@ -63,6 +68,8 @@ type
     procedure ClearUnitsArray;
     procedure ClearVisibilityArray;
     procedure NewFieldButtonClick(Sender: TObject);
+    procedure SaveConditionClick(Sender: TObject);
+    procedure ExitClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -371,6 +378,15 @@ begin
   VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray(UnitsArray, FieldSize);
   DrawFieldFromUnitsArray;
   DrawVisibilityBorder;
+procedure TFieldForm.SaveConditionClick(Sender: TObject);
+begin
+  if SaveDialog.Execute then
+    FieldProcessing.WriteVisibilityArraysToFile (VisibilityArray, FieldSize, SaveDialog.FileName);
+end;
+
+procedure TFieldForm.ExitClick(Sender: TObject);
+begin
+  FieldForm.Close;
 end;
 
 initialization
