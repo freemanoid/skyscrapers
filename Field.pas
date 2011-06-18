@@ -66,7 +66,7 @@ type
     procedure Button1Click(Sender: TObject);
     procedure HideVisibilityUnit (UnitSide, UnitIndex: shortint);
     procedure ClearVisibilityBorder;
-    procedure ClearUnitsArray;
+    procedure ClearUnitsArray (var UnitsArray: TUnitsArray);
     procedure ClearVisibilityArray;
     procedure NewFieldButtonClick(Sender: TObject);
     procedure SaveConditionClick(Sender: TObject);
@@ -152,7 +152,7 @@ procedure TFieldForm.ClearTheField;
 var
   itrRow, itrCol: smallint;
 begin
-  ClearUnitsArray;
+  ClearUnitsArray (UnitsArray);
   for itrRow:= 0 to FieldSize - 1 do
     for itrCol:= 0 to FieldSize - 1 do
       HideUnit (itrRow, itrCol);  
@@ -258,7 +258,7 @@ begin
       VisibilityArray[itrSide][itrVis]:= 0; 
 end;
 
-procedure TFieldForm.ClearUnitsArray;
+procedure TFieldForm.ClearUnitsArray (var UnitsArray: TUnitsArray);
 var
   itrRow, itrCol: shortint;
 begin
