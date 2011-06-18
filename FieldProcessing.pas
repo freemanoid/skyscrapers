@@ -9,7 +9,7 @@ const
   FieldExtension = 'skf';
 
 type
-  TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean;//Containts such types of units
+  TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean; //Containts such types of units
   //that can be placed in the concrete unit
   TCheckSet = set of 1..Field._MaxFieldSize;
   
@@ -23,6 +23,7 @@ procedure ResetUnitsStatsArray (FieldSize: shortint);
 procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint);
 procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint);
 procedure SetClear (var SomeSet: TCheckSet);
+function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): smallint;
 
 implementation
 
@@ -745,6 +746,77 @@ begin
   end;
   PlacedVariants:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, 0, 0, 0, FieldSize);
   UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
+end;
+
+function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): smallint;
+  function UnitsArraysIsEqual (UnitsArray1, UnitsArray2: Field.TUnitsArray; FieldSize: shortint): boolean;
+  var
+    itrRow, itrCol: shortint;
+  begin
+    Result:= false;
+    for itrRow:= 0 to FieldSize - 1 do
+      for itrCol:= 0 to FieldSize - 1 do
+        if UnitsArray1[itrRow][itrCol] <> UnitsArray2[itrRow][itrCol] then
+          Exit;
+    Result:= true;
+  end;
+
+  function CountChanges (UnitsArray1, UnitsArray2: Field.TUnitsArray; FieldSize: shortint): shortint;
+  var
+    itrRow, itrCol: shortint;
+  begin
+    Result:= 0;
+    for itrRow:= 0 to FieldSize - 1 do
+      for itrCol:= 0 to FieldSize - 1 do
+        if UnitsArray1[itrRow][itrCol] <> UnitsArray2[itrRow][itrCol] then
+          Inc (Result);
+  end;
+
+const 
+  _CheckMaxAndMinVisibility = 1;
+  _CheckIfOnlyOneEmptyUnitOnLine = 2;
+  _CheckIfOnlyOneVariantToLocateUnit = 5;
+  _IfOnlyOnePossiblePlace = 15;
+  _BruteforceRows = 20;
+  
+var
+  CurrentAnswerUnitsArray, PreviousAnswerUnitsArray: Field.TUnitsArray;
+  PrevResult: smallint;
+  IsFound: boolean; //variable for backtracking BruteforceRows function
+begin
+  Result:= 0;
+  ResetPlacedVariantsArray (FieldSize);
+  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
+  ResetUnitsStatsArray (FieldSize);
+  Field.FieldForm.ClearUnitsArray (CurrentAnswerUnitsArray);
+  SetPlacedVariantsAccordingToVisibility (VisibilityArray, FieldSize);
+  
+  CheckMaxAndMinVisibility (VisibilityArray, CurrentAnswerUnitsArray, FieldSize);
+  UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+  Inc (Result, _CheckMaxAndMinVisibility * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
+  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
+  
+  CheckIfOnlyOneEmptyUnitOnLine (CurrentAnswerUnitsArray, FieldSize);
+  UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+  Inc (Result, _CheckIfOnlyOneEmptyUnitOnLine * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
+  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
+  
+  CheckIfOnlyOneVariantToLocateUnit (CurrentAnswerUnitsArray, UnitStats, FieldSize);
+  UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+  Inc (Result, _CheckIfOnlyOneVariantToLocateUnit * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
+  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
+                    {можно попробывать юзать для проверки количества решений не перебор всего unitsarray, а юзать unitstatsarray}
+  repeat
+    PrevResult:= Result;
+    IfOnlyOnePossiblePlace (CurrentAnswerUnitsArray, FieldSize);
+    UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+    Inc (Result, _IfOnlyOnePossiblePlace * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
+    PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
+  until Result = PrevResult;
+  
+  PlacedVariants:= BruteforceRows (CurrentAnswerUnitsArray, PlacedVariants, IsFound, 0, 0, 0, FieldSize);
+  UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+  Inc (Result, _BruteforceRows * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
 end;
 
 end.
