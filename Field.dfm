@@ -1,6 +1,6 @@
 object FieldForm: TFieldForm
-  Left = 278
-  Top = -1
+  Left = 280
+  Top = 1
   Width = 866
   Height = 754
   Color = clBtnFace
@@ -20,6 +20,12 @@ object FieldForm: TFieldForm
     Width = 86
     Height = 13
     Caption = #1056#1072#1079#1084#1077#1088' '#1087#1086#1083#1103': '
+  end
+  object Label1: TLabel
+    Left = 25
+    Top = 490
+    Width = 5
+    Height = 13
   end
   object FieldSizeSpinEdit: TSpinEdit
     Left = 10
@@ -83,16 +89,35 @@ object FieldForm: TFieldForm
     Top = 670
     object File1: TMenuItem
       Caption = #1060#1072#1081#1083
-      object Open: TMenuItem
-        Caption = #1054#1090#1082#1088#1099#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
-        OnClick = OpenClick
+      object SaveCondition: TMenuItem
+        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
+        OnClick = SaveConditionClick
+      end
+      object SaveField: TMenuItem
+        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1086#1083#1077
+      end
+      object OpenCondition: TMenuItem
+        Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
+        OnClick = OpenConditionClick
+      end
+      object OpenField: TMenuItem
+        Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1087#1086#1083#1077
+      end
+      object Exit: TMenuItem
+        Caption = #1042#1099#1093#1086#1076
+        OnClick = ExitClick
       end
     end
   end
   object OpenDialog: TOpenDialog
-    Filter = '*.sks'
+    Filter = '*.skf|field of skyscrapers|*.skc|condition of skyscrapers'
     InitialDir = 'cond'
-    Left = 30
+    Left = 25
+    Top = 670
+  end
+  object SaveDialog: TSaveDialog
+    InitialDir = 'cond'
+    Left = 50
     Top = 670
   end
 end
