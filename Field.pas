@@ -39,7 +39,7 @@ type
     MainMenu: TMainMenu;
     OpenDialog: TOpenDialog;
     File1: TMenuItem;
-    Open: TMenuItem;
+    OpenCondition: TMenuItem;
     ClearButton: TButton;
     Button1: TButton;
     NewFieldButton: TButton;
@@ -55,7 +55,7 @@ type
     procedure CheckButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
     procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
-    procedure OpenClick(Sender: TObject);
+    procedure OpenConditionClick(Sender: TObject);
     procedure ClearButtonClick(Sender: TObject);
     procedure Button1Click(Sender: TObject);
     procedure HideVisibilityUnit (UnitSide, UnitIndex: shortint);
