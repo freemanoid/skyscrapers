@@ -609,7 +609,7 @@ begin
     MaxFloor:= 0;
     VisibilityCount:= 0;
     itrCol:= 0;
-    while MaxFloor < FieldSize do
+    while (MaxFloor < FieldSize) and (itrCol < FieldSize) do //some tread will be here if we will remove second condition (we can go out of range but we check _filled_ row and this is tread...)
     begin
       itrVar:= 1;
       while not PlacedVariants[Row][itrCol][itrVar] do
@@ -633,7 +633,7 @@ begin
     MaxFloor:= 0;
     VisibilityCount:= 0;
     itrCol:= FieldSize - 1;
-    while MaxFloor < FieldSize do
+    while (MaxFloor < FieldSize) and (itrCol >= 0) do //some tread will be here if we will remove second condition (we can go out of range but we check _filled_ row and this is tread...)
     begin
       itrVar:= 1;
       while not PlacedVariants[Row][itrCol][itrVar] do
@@ -661,6 +661,7 @@ begin
   
 end;
 
+//backtracking algorithm
 function BruteforceRows (const UnitsArray: Field.TUnitsArray; PlacedVariants: TPlacedVariantsArray; 
 var IsFound: boolean; prevValue, Row, Col, FieldSize: shortint): TPlacedVariantsArray;
 var
@@ -731,6 +732,7 @@ var
   itr: shortint;
   IsFound: boolean;
 begin
+  ResetUnitsStatsArray (FieldSize);
   ResetPlacedVariantsArray (FieldSize);
   SetPlacedVariantsAccordingToVisibility (VisibilityArray, FieldSize);
   CheckMaxAndMinVisibility (VisibilityArray, UnitsArray, FieldSize);
