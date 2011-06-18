@@ -337,7 +337,7 @@ begin
   end;
 end;
 
-procedure TFieldForm.OpenClick(Sender: TObject);
+procedure TFieldForm.OpenConditionClick(Sender: TObject);
 var
   TempVisibilityArray: TVisibilityArray;
 begin
