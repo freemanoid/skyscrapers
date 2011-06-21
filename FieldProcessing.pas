@@ -46,6 +46,7 @@ type
 var
   UnitStats: TUnitStatsArray;
   PlacedVariants: TPlacedVariantsArray;
+  UnitsFoundCounter: shortint; //counter for units that have been found (it needs for diffucalty calculation)
 
 procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint); 
 var
@@ -93,7 +94,10 @@ end;
 procedure AddUnitStat (UnitValue, PreviousValue: shortint);
 begin
   if PreviousValue = 0 then
+  begin
     Inc (UnitStats[UnitValue]);
+    Inc (UnitsFoundCounter); //counter for units that have been found (it needs for diffucalty calculation)
+  end;
 end;
 
 procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint);
