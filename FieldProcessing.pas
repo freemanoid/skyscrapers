@@ -266,7 +266,7 @@ end;
 
 //Check visibility for max(fieldsize) and min(1) visibility, becouse in this way we can 
 //identify some skyscrapers
-procedure CheckMaxAndMinVisibility (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; const FieldSize: shortint);
+function CheckMaxAndMinVisibility (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; const FieldSize: shortint): boolean;
   procedure FillColumnAscending (var SomeArray: Field.TUnitsArray; ColNumber, FieldSize: shortint);
   var
     itr: shortint;
@@ -318,55 +318,73 @@ procedure CheckMaxAndMinVisibility (VisibilityArray: Field.TVisibilityArray; var
 var
   itr: shortint;
 begin
+  Result:= false;
   for itr:= 0 to FieldSize - 1 do
   begin
   //left side
     if VisibilityArray[Field.visLeft][itr] = FieldSize then
-      FillRowAscending (UnitsArray, itr, FieldSize)
+    begin
+      FillRowAscending (UnitsArray, itr, FieldSize);
+      Result:= true;
+    end
     else
       if VisibilityArray[Field.visLeft][itr] = 1 then
       begin   
         AddUnitStat (FieldSize, UnitsArray [itr][0]);
         UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, FieldSize, itr, 0, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, FieldSize, itr, 0);
+        Result:= true;
       end;
   //right side
     if VisibilityArray[Field.visRight][itr] = FieldSize then
-      FillRowDescending (UnitsArray, itr, FieldSize)
+    begin
+      FillRowDescending (UnitsArray, itr, FieldSize);
+      Result:= true;
+    end
     else
       if VisibilityArray[Field.visRight][itr] = 1 then 
       begin
         AddUnitStat (FieldSize, UnitsArray [itr][FieldSize - 1]);
         UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, FieldSize, itr, FieldSize - 1, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, FieldSize, itr, FieldSize - 1);
+        Result:= true;
       end;
   //top side
     if VisibilityArray[Field.visTop][itr] = FieldSize then
-      FillColumnAscending (UnitsArray, itr, FieldSize)
+    begin
+      FillColumnAscending (UnitsArray, itr, FieldSize);
+      Result:= true;
+    end
     else
       if VisibilityArray[Field.visTop][itr] = 1 then 
       begin
         AddUnitStat (FieldSize, UnitsArray [0][itr]);
         UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, FieldSize, 0, itr, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, FieldSize, 0, itr);
+        Result:= true;
       end;
   //bottom side
     if  VisibilityArray[Field.visBot][itr] = FieldSize then
-      FillColumnDescending (UnitsArray, itr, FieldSize)
+    begin
+      FillColumnDescending (UnitsArray, itr, FieldSize);
+      Result:= true;
+    end
     else
       if VisibilityArray[Field.visBot][itr] = 1 then
       begin
         AddUnitStat (FieldSize, UnitsArray [FieldSize - 1][itr]);
         UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, FieldSize, FieldSize - 1, itr, FieldSize);
         Field.FieldForm.SetUnit (UnitsArray, FieldSize, FieldSize - 1, itr);
+        Result:= true;
       end;
   end;
 end;
 
-procedure CheckIfOnlyOneEmptyUnitOnLine (var UnitsArray: Field.TUnitsArray; FieldSize: shortint );
+function CheckIfOnlyOneEmptyUnitOnLine (var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean;
 var
   itrRow, itrCol, itrEmptyUnits, EmptyUnitPosition, EmptyUnitCounter: shortint;
 begin
+  Result:= false;
   //all rows
   for itrRow:= 0 to FieldSize - 1 do
   begin
@@ -386,6 +404,7 @@ begin
       AddUnitStat (EmptyUnitCounter, UnitsArray[itrRow][EmptyUnitPosition]);
       UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, EmptyUnitCounter, itrRow, EmptyUnitPosition, FieldSize);
       Field.FieldForm.SetUnit (UnitsArray, EmptyUnitCounter, itrRow, EmptyUnitPosition);
+      Result:= true;
     end;
   end;
   //all columns
@@ -407,14 +426,16 @@ begin
       AddUnitStat (EmptyUnitCounter, UnitsArray[EmptyUnitPosition][itrCol]);
       UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, EmptyUnitCounter, EmptyUnitPosition, itrCol, FieldSize);
       Field.FieldForm.SetUnit (UnitsArray, EmptyUnitCounter, EmptyUnitPosition, itrCol);
+      Result:= true;
     end;
   end;
 end;
 
-procedure CheckIfOnlyOneVariantToLocateUnit (var UnitsArray: Field.TUnitsArray; UnitStats: TUnitStatsArray; FieldSize: shortint);
+function CheckIfOnlyOneVariantToLocateUnit (var UnitsArray: Field.TUnitsArray; UnitStats: TUnitStatsArray; FieldSize: shortint): boolean;
 var
   itrHostedUnit, itrRow, itrCol, FreeColIndexCounter, FreeRowIndexCounter: shortint;
 begin
+  Result:= false;
   for itrHostedUnit:= 1 to FieldSize do
     if UnitStats[itrHostedUnit] = FieldSize - 1 then
     begin
@@ -431,6 +452,7 @@ begin
       AddUnitStat (itrHostedUnit, UnitsArray[FreeRowIndexCounter][FreeColIndexCounter]);
       UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, itrHostedUnit, FreeRowIndexCounter, FreeColIndexCounter, FieldSize);
       Field.FieldForm.SetUnit (UnitsArray, itrHostedUnit, FreeRowIndexCounter, FreeColIndexCounter);
+      Result:= true;
     end;
 end;
 
@@ -508,12 +530,13 @@ begin
       end;
 end;
 
-procedure IfOnlyOnePossiblePlace (var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
+function IfOnlyOnePossiblePlace (var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean;
 //if there is only one place to set some unit on line (there are no possitive records in PlacedVariants
 //array for this unit)
 var 
   itrRow, itrCol, itrUnit, itr, NewIndex: shortint; 
 begin
+  Result:= false;
   //by rows
   for itrRow:= 0 to FieldSize - 1 do
     for itrUnit:= 1 to FieldSize do
@@ -530,6 +553,7 @@ begin
         UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, itrUnit, itrRow, NewIndex, FieldSize);
         AddUnitStat (itrUnit, UnitsArray[itrRow][NewIndex]);  
         Field.FieldForm.SetUnit (UnitsArray, itrUnit, itrRow, NewIndex);
+        Result:= true;
       end;
     end;
   //by columns
@@ -548,6 +572,7 @@ begin
         UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, itrUnit, NewIndex, itrCol, FieldSize);
         AddUnitStat (itrUnit, UnitsArray[NewIndex][itrCol]);  
         Field.FieldForm.SetUnit(UnitsArray, itrUnit, NewIndex, itrCol);
+        Result:= true;
       end;
     end;
 end;
