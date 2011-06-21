@@ -7,6 +7,12 @@ uses Field, SysUtils, Dialogs;
 const
   ConditionExtension = 'skc';
   FieldExtension = 'skf';
+  _CheckMaxAndMinVisibility = 1;
+  _CheckIfOnlyOneEmptyUnitOnLine = 2;
+  _CheckIfOnlyOneVariantToLocateUnit = 5;
+  _UpdateUnitsArrayAccordingToPlacedVariants = 9;
+  _IfOnlyOnePossiblePlace = 15;
+  _BruteforceRows = 20;
 
 type
   TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean; //Containts such types of units
