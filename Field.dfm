@@ -27,6 +27,15 @@ object FieldForm: TFieldForm
     Width = 5
     Height = 13
   end
+  object DiffucaltyLabel: TLabel
+    Left = 10
+    Top = 300
+    Width = 151
+    Height = 13
+    Alignment = taCenter
+    AutoSize = False
+    Caption = #1059#1088#1086#1074#1077#1085#1100' '#1089#1083#1086#1078#1085#1086#1089#1090#1080
+  end
   object FieldSizeSpinEdit: TSpinEdit
     Left = 10
     Top = 35
@@ -77,13 +86,26 @@ object FieldForm: TFieldForm
     OnClick = Button1Click
   end
   object NewFieldButton: TButton
-    Left = 10
-    Top = 240
-    Width = 96
+    Left = 5
+    Top = 360
+    Width = 156
     Height = 25
-    Caption = #1053#1086#1074#1086#1077' '#1087#1086#1083#1077
+    Caption = #1057#1086#1079#1076#1072#1090#1100' '#1087#1086#1083#1077
     TabOrder = 5
     OnClick = NewFieldButtonClick
+  end
+  object DiffucaltyTrackBar: TTrackBar
+    Left = 10
+    Top = 315
+    Width = 150
+    Height = 31
+    Max = 5
+    Min = 1
+    ParentShowHint = False
+    Position = 1
+    ShowHint = True
+    TabOrder = 6
+    OnChange = DiffucaltyTrackBarChange
   end
   object MainMenu: TMainMenu
     Top = 670

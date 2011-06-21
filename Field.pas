@@ -4,7 +4,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Spin, Menus;
+  Dialogs, ExtCtrls, StdCtrls, Spin, Menus, ComCtrls;
 
 const
   _UnitWidth = 81;
@@ -49,6 +49,8 @@ type
     Exit: TMenuItem;
     SaveDialog: TSaveDialog;
     Label1: TLabel;
+    DiffucaltyTrackBar: TTrackBar;
+    DiffucaltyLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField;
@@ -71,6 +73,7 @@ type
     procedure NewFieldButtonClick(Sender: TObject);
     procedure SaveConditionClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
+    procedure DiffucaltyTrackBarChange(Sender: TObject);
   private
     { Private declarations }
   public
@@ -100,6 +103,7 @@ procedure TFieldForm.FormCreate(Sender: TObject);
 begin
   //variables initializate
   //all field objects initialization
+  Application.HintPause:= 0; //to have a dynamic hint in DiffucaltyTrackBar
   FieldSize:= _MaxFieldSize;
   DrawEmptyField;
   ClearTheField;
@@ -392,6 +396,12 @@ end;
 procedure TFieldForm.ExitClick(Sender: TObject);
 begin
   FieldForm.Close;
+end;
+
+procedure TFieldForm.DiffucaltyTrackBarChange(Sender: TObject);
+begin
+  Application.CancelHint;
+  DiffucaltyTrackBar.Hint:= IntToStr (DiffucaltyTrackBar.Position);
 end;
 
 initialization
