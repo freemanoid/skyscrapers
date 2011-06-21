@@ -814,52 +814,71 @@ function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; Fie
         if UnitsArray1[itrRow][itrCol] <> UnitsArray2[itrRow][itrCol] then
           Inc (Result);
   end;
-
-const 
-  _CheckMaxAndMinVisibility = 1;
-  _CheckIfOnlyOneEmptyUnitOnLine = 2;
-  _CheckIfOnlyOneVariantToLocateUnit = 5;
-  _IfOnlyOnePossiblePlace = 15;
-  _BruteforceRows = 20;
   
 var
-  CurrentAnswerUnitsArray, PreviousAnswerUnitsArray: Field.TUnitsArray;
-  PrevResult: smallint;
+  CurrentAnswerUnitsArray: Field.TUnitsArray;
+  PrevUnitsFoundCounter, SolutionCounter: shortint;
   IsFound: boolean; //variable for backtracking BruteforceRows function
 begin
   Result:= 0;
+  UnitsFoundCounter:= 0;
+  SolutionCounter:= 1;
+  PrevUnitsFoundCounter:= UnitsFoundCounter;
   ResetPlacedVariantsArray (FieldSize);
-  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
-  ResetUnitsStatsArray (FieldSize);
   Field.FieldForm.ClearUnitsArray (CurrentAnswerUnitsArray);
+  ResetUnitsStatsArray (FieldSize);
   SetPlacedVariantsAccordingToVisibility (VisibilityArray, FieldSize);
   
-  CheckMaxAndMinVisibility (VisibilityArray, CurrentAnswerUnitsArray, FieldSize);
-  UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
-  Inc (Result, _CheckMaxAndMinVisibility * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
-  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
-  
-  CheckIfOnlyOneEmptyUnitOnLine (CurrentAnswerUnitsArray, FieldSize);
-  UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
-  Inc (Result, _CheckIfOnlyOneEmptyUnitOnLine * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
-  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
-  
-  CheckIfOnlyOneVariantToLocateUnit (CurrentAnswerUnitsArray, UnitStats, FieldSize);
-  UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
-  Inc (Result, _CheckIfOnlyOneVariantToLocateUnit * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
-  PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
-                    {можно попробывать юзать для проверки количества решений не перебор всего unitsarray, а юзать unitstatsarray}
-  repeat
-    PrevResult:= Result;
-    IfOnlyOnePossiblePlace (CurrentAnswerUnitsArray, FieldSize);
+  if CheckMaxAndMinVisibility (VisibilityArray, CurrentAnswerUnitsArray, FieldSize) then
+  begin
+    Inc (Result, _CheckMaxAndMinVisibility * (UnitsFoundCounter - PrevUnitsFoundCounter));
+    PrevUnitsFoundCounter:= UnitsFoundCounter;
     UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
-    Inc (Result, _IfOnlyOnePossiblePlace * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
-    PreviousAnswerUnitsArray:= CurrentAnswerUnitsArray;
-  until Result = PrevResult;
+    Inc (Result, _UpdateUnitsArrayAccordingToPlacedVariants * (UnitsFoundCounter - PrevUnitsFoundCounter));
+    PrevUnitsFoundCounter:= UnitsFoundCounter;
+  end;
+  repeat
+    if CheckIfOnlyOneEmptyUnitOnLine (CurrentAnswerUnitsArray, FieldSize) then
+    begin
+      Inc (Result, _CheckIfOnlyOneEmptyUnitOnLine * (UnitsFoundCounter - PrevUnitsFoundCounter));
+      PrevUnitsFoundCounter:= UnitsFoundCounter;
+      UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+      Inc (Result, _UpdateUnitsArrayAccordingToPlacedVariants * (UnitsFoundCounter - PrevUnitsFoundCounter));
+      PrevUnitsFoundCounter:= UnitsFoundCounter;
+      Continue;
+    end;
   
-  PlacedVariants:= BruteforceRows (CurrentAnswerUnitsArray, PlacedVariants, IsFound, 0, 0, 0, FieldSize);
+    if CheckIfOnlyOneVariantToLocateUnit (CurrentAnswerUnitsArray, UnitStats, FieldSize) then
+    begin
+      Inc (Result, _CheckIfOnlyOneVariantToLocateUnit * (UnitsFoundCounter - PrevUnitsFoundCounter));
+      PrevUnitsFoundCounter:= UnitsFoundCounter;
+      UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+      Inc (Result, _UpdateUnitsArrayAccordingToPlacedVariants * (UnitsFoundCounter - PrevUnitsFoundCounter));
+      PrevUnitsFoundCounter:= UnitsFoundCounter;
+      Continue;
+    end;
+    
+    if IfOnlyOnePossiblePlace (CurrentAnswerUnitsArray, FieldSize) then
+    begin
+      Inc (Result, _IfOnlyOnePossiblePlace * (UnitsFoundCounter - PrevUnitsFoundCounter));
+      PrevUnitsFoundCounter:= UnitsFoundCounter;
+      UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
+      Inc (Result, _UpdateUnitsArrayAccordingToPlacedVariants * (UnitsFoundCounter - PrevUnitsFoundCounter));
+      PrevUnitsFoundCounter:= UnitsFoundCounter;
+      Continue;
+    end;
+  until PrevUnitsFoundCounter = UnitsFoundCounter;
+  {можно попробывать юзать для проверки количества решений не перебор всего unitsarray, а юзать unitstats array}
+  {added: изменено на подсчёт изменений в функции AddUnitStat и дальнейшим сравнением (вполне годная реализация)}
+  
+  PlacedVariants:= BruteforceRows (CurrentAnswerUnitsArray, PlacedVariants, IsFound, SolutionCounter, 0, 0, 0, FieldSize);
+  if SolutionCounter > 2 then
+  begin
+    Result:= 0; //we have more then one possible solution
+    Exit;
+  end;
   UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
-  Inc (Result, _BruteforceRows * CountChanges (PreviousAnswerUnitsArray, CurrentAnswerUnitsArray, FieldSize));
+  Inc (Result, _BruteforceRows * (UnitsFoundCounter - PrevUnitsFoundCounter));
 end;
 
 end.
