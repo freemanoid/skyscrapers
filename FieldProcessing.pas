@@ -449,7 +449,7 @@ end;
 
 procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint);
 var
-  itrRow, itrCol, itrVariant: shortint;
+  itrRow, itrCol: shortint;
 begin
   for itrRow:= 0 to Row - 1 do
     RemovePlacedVariant (PlacedVariants, UnitValue, itrRow, Col);
@@ -505,10 +505,10 @@ end;
 procedure IfOnlyOnePossiblePlace (var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
 //if there is only one place to set some unit on line (there are no possitive records in PlacedVariants
 //array for this unit)
-var
-  CheckSet: TCheckSet; 
-  itrRow, itrCol, itrVar, itrUnit, itr, NewIndex: shortint; 
+var 
+  itrRow, itrCol, itrUnit, itr, NewIndex: shortint; 
 begin
+  //by rows
   for itrRow:= 0 to FieldSize - 1 do
     for itrUnit:= 1 to FieldSize do
     begin
@@ -523,9 +523,10 @@ begin
       begin
         UpdatePlacedVariantsAccordingToNewUnit (PlacedVariants, itrUnit, itrRow, NewIndex, FieldSize);
         AddUnitStat (itrUnit, UnitsArray[itrRow][NewIndex]);  
-        Field.FieldForm.SetUnit(UnitsArray, itrUnit, itrRow, NewIndex);
+        Field.FieldForm.SetUnit (UnitsArray, itrUnit, itrRow, NewIndex);
       end;
     end;
+  //by columns
   for itrCol:= 0 to FieldSize - 1 do
     for itrUnit:= 1 to FieldSize do
     begin
@@ -684,10 +685,7 @@ begin
       Exit;
     end
     else
-    begin
-      IsFound:= false;
       Exit;
-    end;
 
   if UnitsArray[Row][Col] = 0 then
   begin
@@ -723,7 +721,7 @@ procedure VisibilityBruteforce (VisibilityArray: Field.TVisibilityArray; PlacedV
   end;
   
 var
-  itrVis, itr: shortint;
+  itr: shortint;
 begin
 
 end;

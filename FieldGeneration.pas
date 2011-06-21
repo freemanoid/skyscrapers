@@ -9,9 +9,9 @@ function GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; F
 
 implementation
 
-uses 
+uses
   FieldProcessing;
-
+  
 function RandomButNotIn (var SomeSet: FieldProcessing.TCheckSet; MaxValue: shortint): shortint;
 begin
   while true do
@@ -31,7 +31,6 @@ function GenerateUnitsArray(FieldSize: shortint): Field.TUnitsArray;
     itrCol: shortint;
     CurrentSet: FieldProcessing.TCheckSet;
   begin
-    randomize;
     SetClear (CurrentSet);
     for itrCol:= 0 to FieldSize - 1 do
       UnitsArray[Row][itrCol]:= RandomButNotIn (CurrentSet, FieldSize);  
@@ -84,6 +83,7 @@ function GenerateUnitsArray(FieldSize: shortint): Field.TUnitsArray;
       for itrRow:= 0 to FieldSize - 1 do
         Swap (UnitsArray[Col1][itrRow], UnitsArray[Col2][itrRow]);
     end;
+    
   var
     swap1, swap2: shortint;  
   begin
@@ -103,7 +103,7 @@ function GenerateUnitsArray(FieldSize: shortint): Field.TUnitsArray;
   end;
   
 var
-  itr1, itrRow, itrCol: shortint;
+  itr, itrRow: shortint;
 begin
   itrRow:= 0;
   while itrRow <= FieldSize - 1 do
@@ -112,13 +112,13 @@ begin
     if StillLatinSquare (Result, itrRow, FieldSize) then
       Inc (itrRow);  
   end;
-  for itr1:= 1 to 10 do
+  for itr:= 1 to 10 do
     SwapRandomRowsAndCols (Result, FieldSize);
 end;
 
 function GetVisibilityArrayFromUnitsArray (UnitsArray: Field.TUnitsArray; FieldSize: shortint): Field.TVisibilityArray;
 var
-  itr, itrRow, itrCol, MaxFloor: shortint;
+  itrRow, itrCol, MaxFloor: shortint;
 begin
 //check visibility
   //Row from left

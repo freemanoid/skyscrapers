@@ -165,7 +165,7 @@ end;
 
 procedure TFieldForm.DrawEmptyField;
 var
-  itrRow, itrCol, itr: smallint;
+  itrRow, itrCol: smallint;
 begin
   for itrRow:= 0 to FieldSize - 1 do
       for itrCol:= 0 to FieldSize - 1 do
