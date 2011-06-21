@@ -23,7 +23,7 @@ type
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string);
 procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string);
-procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
+function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean;
 procedure ResetPlacedVariantsArray (FieldSize: shortint);
 procedure ResetUnitsStatsArray (FieldSize: shortint);
 procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint);
@@ -765,12 +765,15 @@ var
 begin
 
 end;
-                                                              
-procedure FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
+
+//returns true if there is only one solution and false if more
+function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean;
 var
-  itr: shortint;
+  itr, SolutionCounter: shortint;
   IsFound: boolean;
 begin
+  Result:= true;
+  SolutionCounter:= 1;
   ResetUnitsStatsArray (FieldSize);
   ResetPlacedVariantsArray (FieldSize);
   SetPlacedVariantsAccordingToVisibility (VisibilityArray, FieldSize);
@@ -782,7 +785,9 @@ begin
     UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
     IfOnlyOnePossiblePlace (UnitsArray, FieldSize);
   end;
-  PlacedVariants:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, 0, 0, 0, FieldSize);
+  PlacedVariants:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, SolutionCounter, 0, 0, 0, FieldSize);
+  if SolutionCounter > 2 then
+    Result:= false;
   UpdateUnitsArrayAccordingToPlacedVariants (UnitsArray, PlacedVariants, FieldSize);
 end;
 
