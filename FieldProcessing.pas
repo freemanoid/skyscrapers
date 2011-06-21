@@ -699,8 +699,10 @@ begin
 end;
 
 //backtracking algorithm
+//if SolutionCounter = 0 then we don't check if there is only one solution and exit when found a solution (SolutionCounter will be zero) 
+//if SolutionCounter = 1 then we returns last solution and SolutionCounter = number of solutions + 1
 function BruteforceRows (const UnitsArray: Field.TUnitsArray; PlacedVariants: TPlacedVariantsArray; 
-var IsFound: boolean; prevValue, Row, Col, FieldSize: shortint): TPlacedVariantsArray;
+var IsFound: boolean; SolutionCounter, prevValue, Row, Col, FieldSize: shortint): TPlacedVariantsArray;
 var
   itr: shortint;
 begin
@@ -712,11 +714,14 @@ begin
     begin
       if Row = FieldSize - 1 then
       begin
-        IsFound:= true;
+        if SolutionCounter = 0 then
+          IsFound:= true
+        else
+          Inc (SolutionCounter); 
         Result:= PlacedVariants;
         Exit;
       end;
-      Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, 0, Row + 1, 0, FieldSize);
+      Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, SolutionCounter, 0, Row + 1, 0, FieldSize);
       Exit;
     end
     else
@@ -726,10 +731,10 @@ begin
   begin
     for itr:= 1 to FieldSize do
       if PlacedVariants[Row][Col][itr] and not IsFound then
-        Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, itr, Row, Col + 1, FieldSize);
+        Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, SolutionCounter, itr, Row, Col + 1, FieldSize);
   end
   else
-    Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, 0, Row, Col + 1, FieldSize);  
+    Result:= BruteforceRows (UnitsArray, PlacedVariants, IsFound, SolutionCounter, 0, Row, Col + 1, FieldSize);  
 end;
 
 procedure VisibilityBruteforce (VisibilityArray: Field.TVisibilityArray; PlacedVariants: TPlacedVariantsArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint);
