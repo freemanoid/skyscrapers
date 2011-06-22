@@ -709,7 +709,8 @@ end;
 //if SolutionCounter = 0 then we don't check if there is only one solution and exit when found a solution (SolutionCounter will be zero) 
 //if SolutionCounter = 1 then we returns last solution and SolutionCounter = number of solutions + 1
 function BruteforceRows (const UnitsArray: Field.TUnitsArray; PlacedVariants: TPlacedVariantsArray; 
-var IsFound: boolean; SolutionCounter, prevValue, Row, Col, FieldSize: shortint): TPlacedVariantsArray;
+                         var IsFound: boolean; var SolutionCounter: smallint; 
+                         prevValue, Row, Col, FieldSize: shortint): TPlacedVariantsArray;
 var
   itr: shortint;
 begin
@@ -776,7 +777,8 @@ end;
 //returns true if there is only one solution and false if more
 function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean;
 var
-  itr, SolutionCounter: shortint;
+  itr: shortint;
+  SolutionCounter: smallint;
   IsFound: boolean;
 begin
   Result:= true;
@@ -824,7 +826,8 @@ function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; Fie
   
 var
   CurrentAnswerUnitsArray: Field.TUnitsArray;
-  PrevUnitsFoundCounter, SolutionCounter: shortint;
+  PrevUnitsFoundCounter: shortint;
+  SolutionCounter: smallint;
   IsFound: boolean; //variable for backtracking BruteforceRows function
 begin
   Result:= 0;
