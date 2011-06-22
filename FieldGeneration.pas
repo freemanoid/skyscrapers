@@ -195,16 +195,19 @@ procedure GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; 
   end;
   
 var
-  MinScore, MaxScore: smallint;
+  MinScore, MaxScore, CurrScore: smallint;
 begin
   MinScore:= GetMinScore (FieldSize) + (GetMaxScore (FieldSize) - GetMinScore (FieldSize)) div
             (MaxDiffucaltyLevel - MinDiffucaltyLevel + 1) * (DiffucaltyLevel - MinDiffucaltyLevel);
   MaxScore:= GetMinScore (FieldSize) + (GetMaxScore (FieldSize) - GetMinScore (FieldSize)) div
             (MaxDiffucaltyLevel - MinDiffucaltyLevel + 1) * (DiffucaltyLevel - MinDiffucaltyLevel + 1);;
   VisibilityArray:= GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
-  while not ((FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize) >= MinScore) and
-            (FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize) <= MaxScore)) do
+  CurrScore:= FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize);
+  while not ((CurrScore >= MinScore) and (CurrScore <= MaxScore)) do
+  begin
     VisibilityArray:= GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
+    CurrScore:= FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize)
+  end;
 end;
 
 end.
