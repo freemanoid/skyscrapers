@@ -53,6 +53,9 @@ type
     DiffucaltyLabel: TLabel;
     OpenConditionDialog: TOpenDialog;
     SaveConditionDialog: TSaveDialog;
+    N1: TMenuItem;
+    N2: TMenuItem;
+    N3: TMenuItem;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField;
@@ -422,6 +425,31 @@ procedure TFieldForm.DiffucaltyTrackBarChange(Sender: TObject);
 begin
   Application.CancelHint;
   DiffucaltyTrackBar.Hint:= IntToStr (DiffucaltyTrackBar.Position);
+end;
+
+procedure TFieldForm.SaveFieldClick(Sender: TObject);
+begin
+  if SaveFieldDialog.Execute then
+    FieldProcessing.WriteUnitsArrayToFile (UnitsArray, FieldSize, SaveFieldDialog.FileName);  
+end;
+
+procedure TFieldForm.OpenFieldClick(Sender: TObject);
+var
+  TempUnitsArray: TUnitsArray;
+begin
+  if OpenFieldDialog.Execute then
+  begin
+    ClearTheField;
+    ClearVisibilityBorder;
+    FieldProcessing.ReadUnitsArrayFromFile (UnitsArray, FieldSize, OpenFieldDialog.FileName);
+    TempUnitsArray:= UnitsArray;    //hack because of clear part of FieldSizeSpinEdit OnChange event
+    FieldSizeSpinEdit.Value:= FieldSize;
+    UnitsArray:= TempUnitsArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
+    DrawFieldFromUnitsArray;
+    DrawVisibilityBorder;
+    FieldProcessing.ResetPlacedVariantsArray (FieldSize);
+    FieldProcessing.ResetUnitsStatsArray (FieldSize);
+  end; 
 end;
 
 initialization

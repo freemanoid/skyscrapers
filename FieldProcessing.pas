@@ -23,6 +23,8 @@ type
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
 procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string);
 procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string);
+procedure WriteUnitsArrayToFile (UnitsArray: Field.TUnitsArray; FieldSize: shortint; FileName: string);
+procedure ReadUnitsArrayFromFile (var UnitsArray: Field.TUnitsArray; var FieldSize: shortint; FileName: string);
 function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean;
 procedure ResetPlacedVariantsArray (FieldSize: shortint);
 procedure ResetUnitsStatsArray (FieldSize: shortint);
@@ -38,7 +40,12 @@ type
     FieldSize: shortint;
     VisibilityArray: Field.TVisibilityArray;
   end;
+  TUnitsArrayRecord = record
+    FieldSize: shortint;
+    UnitsArray: Field.TUnitsArray;
+  end;
   TVisibilityFile = file of TVisibilityRecord;
+  TUnitsArrayFile = file of TUnitsArrayRecord;
   TUnitStatsArray = array[1..Field._MaxFieldSize] of shortint;//Containts the "statistic" information about different types of
   //units that have been already placed to their places. Array index - unit type, value - number of
   //units of this type
@@ -879,6 +886,41 @@ begin
   end;
   UpdateUnitsArrayAccordingToPlacedVariants (CurrentAnswerUnitsArray, PlacedVariants, FieldSize);
   Inc (Result, _BruteforceRows * (UnitsFoundCounter - PrevUnitsFoundCounter));
+end;
+
+procedure WriteUnitsArrayToFile (UnitsArray: Field.TUnitsArray; FieldSize: shortint; FileName: string);
+var
+  OutputFile: TUnitsArrayFile;
+  FileRecord: TUnitsArrayRecord;
+begin
+  FileRecord.FieldSize:= FieldSize;
+  FileRecord.UnitsArray:= UnitsArray;
+  AssignFile (OutputFile, FileName);
+  Rewrite (OutputFile);
+  Write (OutputFile, FileRecord);
+  Close (OutputFile);
+end; 
+
+procedure ReadUnitsArrayFromFile (var UnitsArray: Field.TUnitsArray; var FieldSize: shortint; FileName: string);
+var
+  InputFile: TUnitsArrayFile;
+  FileRecord: TUnitsArrayRecord;
+begin
+  AssignFile (InputFile, FileName);
+  Reset (InputFile);
+  try
+    Read (InputFile, FileRecord);
+  except
+    on E : EInOutError do 
+    begin
+      ShowMessage ('Формат файла не верный');
+      Close (InputFile);
+      Exit;
+    end;
+  end;
+  Close (InputFile);
+  FieldSize:= FileRecord.FieldSize;
+  UnitsArray:= FileRecord.UnitsArray;
 end;
 
 end.
