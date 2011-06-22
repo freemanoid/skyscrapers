@@ -5,7 +5,11 @@ interface
 uses
   Field, SysUtils, Dialogs;
 
-function GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): shortint;
+const
+  MinScore: array[4..6] of smallint = (43, 106, 424); //it was calculated using a cycle, 
+  //field generation and calculating function with current score constans of solution functions
+  
+procedure GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; MinDiffucaltyLevel, MaxDiffucaltyLevel, DiffucaltyLevel, FieldSize: shortint);
 
 implementation
 
@@ -179,9 +183,28 @@ begin
   end;
 end;
 
-function GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): shortint;
+procedure GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; MinDiffucaltyLevel, MaxDiffucaltyLevel, DiffucaltyLevel, FieldSize: shortint);
+  function GetMaxScore (FieldSize: shortint): smallint;
+  begin
+    Result:= sqr (FieldSize) * FieldProcessing._BruteforceRows;
+  end;
+
+  function GetMinScore (FieldSize: shortint): smallint;
+  begin
+    Result:= MinScore[FieldSize];
+  end;
+  
+var
+  MinScore, MaxScore: smallint;
 begin
+  MinScore:= GetMinScore (FieldSize) + (GetMaxScore (FieldSize) - GetMinScore (FieldSize)) div
+            (MaxDiffucaltyLevel - MinDiffucaltyLevel + 1) * (DiffucaltyLevel - MinDiffucaltyLevel);
+  MaxScore:= GetMinScore (FieldSize) + (GetMaxScore (FieldSize) - GetMinScore (FieldSize)) div
+            (MaxDiffucaltyLevel - MinDiffucaltyLevel + 1) * (DiffucaltyLevel - MinDiffucaltyLevel + 1);;
   VisibilityArray:= GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
+  while not ((FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize) >= MinScore) and
+            (FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize) <= MaxScore)) do
+    VisibilityArray:= GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
 end;
 
 end.

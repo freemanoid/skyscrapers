@@ -11,7 +11,7 @@ const
   _UnitHeight = 81;
   _FloorIncrement = 5;
   _DistanceBeetwenUnits = 9;
-  _DefaultFieldSize = 3;
+  _DefaultFieldSize = 4;
   _BorderWidth = 50;
   _TopLeftFieldBorder: TPoint = (X: 150; Y: 50);
   _BorderFontName: String = 'Comic Sans MS';
@@ -381,7 +381,10 @@ procedure TFieldForm.NewFieldButtonClick(Sender: TObject);
 begin
   AllreadySolved:= false;
   ClearTheField;
-  FieldGeneration.GenerateVisibilityArray(VisibilityArray, FieldSize);
+  FieldGeneration.GenerateVisibilityArray (VisibilityArray, DiffucaltyTrackBar.Min, DiffucaltyTrackBar.Max, DiffucaltyTrackBar.Position, FieldSize);
+  {VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
+  while FieldProcessing.CalculateDiffucultyScores(VisibilityArray, FieldSize) = 0 do
+    VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);}
   DrawEmptyField;
   DrawVisibilityBorder;
   Label1.Caption:= IntToStr(CalculateDiffucultyScores(VisibilityArray, FieldSize));

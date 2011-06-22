@@ -43,9 +43,9 @@ object FieldForm: TFieldForm
     Height = 22
     EditorEnabled = False
     MaxValue = 6
-    MinValue = 3
+    MinValue = 4
     TabOrder = 0
-    Value = 3
+    Value = 4
     OnChange = FieldSizeSpinEditChange
   end
   object CheckButton: TButton
@@ -99,7 +99,7 @@ object FieldForm: TFieldForm
     Top = 315
     Width = 150
     Height = 31
-    Max = 5
+    Max = 3
     Min = 1
     ParentShowHint = False
     Position = 1

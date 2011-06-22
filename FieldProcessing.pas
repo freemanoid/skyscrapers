@@ -8,9 +8,9 @@ const
   ConditionExtension = 'skc';
   FieldExtension = 'skf';
   _CheckMaxAndMinVisibility = 1;
-  _CheckIfOnlyOneEmptyUnitOnLine = 2;
-  _CheckIfOnlyOneVariantToLocateUnit = 5;
-  _UpdateUnitsArrayAccordingToPlacedVariants = 9;
+  _CheckIfOnlyOneEmptyUnitOnLine = 1;
+  _CheckIfOnlyOneVariantToLocateUnit = 6;
+  _UpdateUnitsArrayAccordingToPlacedVariants = 10;
   _IfOnlyOnePossiblePlace = 15;
   _BruteforceRows = 20;
 
