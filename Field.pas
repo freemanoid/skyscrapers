@@ -109,6 +109,7 @@ begin
   //variables initializate
   //all field objects initialization
   Application.HintPause:= 0; //to have a dynamic hint in DiffucaltyTrackBar
+  AutoSolutionButton.Enabled:= false;
   FieldSize:= _MaxFieldSize;
   DrawEmptyField;
   ClearTheField;
@@ -334,6 +335,7 @@ begin
   ClearUnitsArray (UnitsArray);
   FieldProcessing.FindSolution (VisibilityArray, UnitsArray, FieldSize);
   DrawFieldFromUnitsArray;
+  AutoSolutionButton.Enabled:= false;
 end;
 
 procedure TFieldForm.OpenConditionClick(Sender: TObject);
@@ -353,6 +355,7 @@ begin
     DrawEmptyField;
     FieldProcessing.ResetPlacedVariantsArray (FieldSize);
     FieldProcessing.ResetUnitsStatsArray (FieldSize);
+    AutoSolutionButton.Enabled:= true;
   end;
 end;
 
@@ -361,6 +364,7 @@ begin
   DrawEmptyField;
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
   FieldProcessing.ResetUnitsStatsArray (FieldSize);
+  AutoSolutionButton.Enabled:= true;
 end;
 
 procedure TFieldForm.Button1Click(Sender: TObject);
@@ -377,6 +381,7 @@ begin
   FieldGeneration.GenerateVisibilityArray (VisibilityArray, DiffucaltyTrackBar.Min, DiffucaltyTrackBar.Max, DiffucaltyTrackBar.Position, FieldSize);
   DrawEmptyField;
   DrawVisibilityBorder;
+  AutoSolutionButton.Enabled:= true;
 end;
 
 procedure TFieldForm.SaveConditionClick(Sender: TObject);
@@ -418,11 +423,13 @@ begin
     DrawVisibilityBorder;
     FieldProcessing.ResetPlacedVariantsArray (FieldSize);
     FieldProcessing.ResetUnitsStatsArray (FieldSize);
+    AutoSolutionButton.Enabled:= false;
   end; 
 end;
 
 procedure TFieldForm.FieldSizeSpinEditChange(Sender: TObject);
 begin
+  AutoSolutionButton.Enabled:= false;
   ClearTheField;
   if FieldSizeSpinEdit.Value < FieldSize then
   begin
