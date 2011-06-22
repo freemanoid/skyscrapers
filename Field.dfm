@@ -21,15 +21,9 @@ object FieldForm: TFieldForm
     Height = 13
     Caption = #1056#1072#1079#1084#1077#1088' '#1087#1086#1083#1103': '
   end
-  object Label1: TLabel
-    Left = 25
-    Top = 490
-    Width = 5
-    Height = 13
-  end
   object DiffucaltyLabel: TLabel
     Left = 10
-    Top = 300
+    Top = 250
     Width = 151
     Height = 13
     Alignment = taCenter
@@ -75,28 +69,18 @@ object FieldForm: TFieldForm
     TabOrder = 3
     OnClick = ClearButtonClick
   end
-  object Button1: TButton
-    Left = 10
-    Top = 180
-    Width = 96
-    Height = 41
-    Caption = #1055#1088#1086#1074#1077#1088#1080#1090#1100' (really)'
-    TabOrder = 4
-    WordWrap = True
-    OnClick = Button1Click
-  end
   object NewFieldButton: TButton
     Left = 5
-    Top = 360
+    Top = 310
     Width = 156
     Height = 25
     Caption = #1057#1086#1079#1076#1072#1090#1100' '#1087#1086#1083#1077
-    TabOrder = 5
+    TabOrder = 4
     OnClick = NewFieldButtonClick
   end
   object DiffucaltyTrackBar: TTrackBar
     Left = 10
-    Top = 315
+    Top = 265
     Width = 150
     Height = 31
     Max = 3
@@ -104,7 +88,7 @@ object FieldForm: TFieldForm
     ParentShowHint = False
     Position = 1
     ShowHint = True
-    TabOrder = 6
+    TabOrder = 5
     OnChange = DiffucaltyTrackBarChange
   end
   object MainMenu: TMainMenu

@@ -41,14 +41,12 @@ type
     MainMenuItemFile: TMenuItem;
     OpenCondition: TMenuItem;
     ClearButton: TButton;
-    Button1: TButton;
     NewFieldButton: TButton;
     SaveCondition: TMenuItem;
     SaveField: TMenuItem;
     OpenField: TMenuItem;
     Exit: TMenuItem;
     SaveFieldDialog: TSaveDialog;
-    Label1: TLabel;
     DiffucaltyTrackBar: TTrackBar;
     DiffucaltyLabel: TLabel;
     OpenConditionDialog: TOpenDialog;
@@ -277,26 +275,6 @@ begin
       for itrCol:= 0 to FieldSize - 1 do
         UnitsArray[itrRow][itrCol]:= 0;  
 end;
-    
-procedure TFieldForm.FieldSizeSpinEditChange(Sender: TObject);
-begin
-  if FieldSizeSpinEdit.Value < FieldSize then
-  begin
-    ClearTheField;
-    ClearVisibilityBorder;
-    FieldSize:= FieldSizeSpinEdit.Value;
-    DrawVisibilityBorder;
-    DrawEmptyField;
-  end
-  else
-  begin
-    ClearTheField;
-    FieldSize:= FieldSizeSpinEdit.Value;
-    ClearVisibilityBorder;
-    DrawVisibilityBorder;
-    DrawEmptyField;
-  end;
-end;
 
 procedure TFieldForm.UnitMouseDown (Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
@@ -402,7 +380,6 @@ begin
     VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);}
   DrawEmptyField;
   DrawVisibilityBorder;
-  Label1.Caption:= IntToStr(CalculateDiffucultyScores(VisibilityArray, FieldSize));
 end;
 
 procedure TFieldForm.SaveConditionClick(Sender: TObject);
@@ -445,6 +422,23 @@ begin
     FieldProcessing.ResetPlacedVariantsArray (FieldSize);
     FieldProcessing.ResetUnitsStatsArray (FieldSize);
   end; 
+end;
+
+procedure TFieldForm.FieldSizeSpinEditChange(Sender: TObject);
+begin
+  ClearTheField;
+  if FieldSizeSpinEdit.Value < FieldSize then
+  begin
+    ClearVisibilityBorder;
+    FieldSize:= FieldSizeSpinEdit.Value;
+  end
+  else
+  begin
+    FieldSize:= FieldSizeSpinEdit.Value;
+    ClearVisibilityBorder;
+  end;
+  DrawVisibilityBorder;
+  DrawEmptyField;
 end;
 
 initialization
