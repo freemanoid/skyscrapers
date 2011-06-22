@@ -108,8 +108,8 @@ object FieldForm: TFieldForm
     OnChange = DiffucaltyTrackBarChange
   end
   object MainMenu: TMainMenu
-    Top = 670
-    object File1: TMenuItem
+    Top = 675
+    object MainMenuItemFile: TMenuItem
       Caption = #1060#1072#1081#1083
       object SaveCondition: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
@@ -117,13 +117,15 @@ object FieldForm: TFieldForm
       end
       object SaveField: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1086#1083#1077
+        OnClick = SaveFieldClick
       end
       object OpenCondition: TMenuItem
-        Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
+        Caption = #1054#1090#1082#1088#1099#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
         OnClick = OpenConditionClick
       end
       object OpenField: TMenuItem
-        Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1087#1086#1083#1077
+        Caption = #1054#1090#1082#1088#1099#1090#1100' '#1087#1086#1083#1077
+        OnClick = OpenFieldClick
       end
       object Exit: TMenuItem
         Caption = #1042#1099#1093#1086#1076
@@ -131,15 +133,31 @@ object FieldForm: TFieldForm
       end
     end
   end
-  object OpenDialog: TOpenDialog
-    Filter = '*.skf|field of skyscrapers|*.skc|condition of skyscrapers'
-    InitialDir = 'cond'
-    Left = 25
-    Top = 670
+  object OpenFieldDialog: TOpenDialog
+    DefaultExt = 'skf'
+    Filter = 'skyscraper field (*.skf)|*.skf'
+    InitialDir = 'fields'
+    Left = 75
+    Top = 675
   end
-  object SaveDialog: TSaveDialog
-    InitialDir = 'cond'
+  object SaveFieldDialog: TSaveDialog
+    DefaultExt = 'skf'
+    Filter = 'skyscraper field (*.skf)|*.skf'
+    InitialDir = 'fields'
+    Left = 25
+    Top = 675
+  end
+  object OpenConditionDialog: TOpenDialog
+    DefaultExt = 'skc'
+    Filter = 'skyscraper condition (*.skc)|*.skc'
+    Left = 100
+    Top = 675
+  end
+  object SaveConditionDialog: TSaveDialog
+    DefaultExt = 'skc'
+    Filter = 'skyscraper condition (*.skc)|*.skc'
+    InitialDir = 'conditions'
     Left = 50
-    Top = 670
+    Top = 675
   end
 end

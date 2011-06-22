@@ -37,8 +37,8 @@ type
     CheckButton: TButton;
     AutoSolutionButton: TButton;
     MainMenu: TMainMenu;
-    OpenDialog: TOpenDialog;
-    File1: TMenuItem;
+    OpenFieldDialog: TOpenDialog;
+    MainMenuItemFile: TMenuItem;
     OpenCondition: TMenuItem;
     ClearButton: TButton;
     Button1: TButton;
@@ -47,10 +47,12 @@ type
     SaveField: TMenuItem;
     OpenField: TMenuItem;
     Exit: TMenuItem;
-    SaveDialog: TSaveDialog;
+    SaveFieldDialog: TSaveDialog;
     Label1: TLabel;
     DiffucaltyTrackBar: TTrackBar;
     DiffucaltyLabel: TLabel;
+    OpenConditionDialog: TOpenDialog;
+    SaveConditionDialog: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField;
@@ -74,6 +76,8 @@ type
     procedure SaveConditionClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
     procedure DiffucaltyTrackBarChange(Sender: TObject);
+    procedure SaveFieldClick(Sender: TObject);
+    procedure OpenFieldClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -113,7 +117,6 @@ begin
   DrawEmptyField;
   DrawVisibilityBorder;
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
-  OpenDialog.DefaultExt:= FieldProcessing.ConditionExtension + FieldProcessing.FieldExtension;
 end;
 
 procedure TFieldForm.DrawUnit (UnitNumber, Row, Col: shortint);
@@ -346,12 +349,12 @@ procedure TFieldForm.OpenConditionClick(Sender: TObject);
 var
   TempVisibilityArray: TVisibilityArray;
 begin
-  if OpenDialog.Execute then
+  if OpenConditionDialog.Execute then
   begin
     AllreadySolved:= false;
     ClearVisibilityBorder;
     ClearTheField;
-    FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenDialog.FileName);
+    FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenConditionDialog.FileName);
     TempVisibilityArray:= VisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
     FieldSizeSpinEdit.Value:= FieldSize;
     VisibilityArray:= TempVisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
@@ -392,8 +395,8 @@ end;
 
 procedure TFieldForm.SaveConditionClick(Sender: TObject);
 begin
-  if SaveDialog.Execute then
-    FieldProcessing.WriteVisibilityArraysToFile (VisibilityArray, FieldSize, SaveDialog.FileName);
+  if SaveConditionDialog.Execute then
+    FieldProcessing.WriteVisibilityArraysToFile (VisibilityArray, FieldSize, SaveConditionDialog.FileName);
 end;
 
 procedure TFieldForm.ExitClick(Sender: TObject);
