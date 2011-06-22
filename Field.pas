@@ -332,7 +332,7 @@ end;
 procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
   ClearUnitsArray (UnitsArray);
-  FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
+  FieldProcessing.FindSolution (VisibilityArray, UnitsArray, FieldSize);
   DrawFieldFromUnitsArray;
 end;
 
@@ -375,9 +375,6 @@ procedure TFieldForm.NewFieldButtonClick(Sender: TObject);
 begin
   ClearTheField;
   FieldGeneration.GenerateVisibilityArray (VisibilityArray, DiffucaltyTrackBar.Min, DiffucaltyTrackBar.Max, DiffucaltyTrackBar.Position, FieldSize);
-  {VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
-  while FieldProcessing.CalculateDiffucultyScores(VisibilityArray, FieldSize) = 0 do
-    VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);}
   DrawEmptyField;
   DrawVisibilityBorder;
 end;
