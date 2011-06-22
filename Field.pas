@@ -90,7 +90,6 @@ type
     FieldSize: shortint;
     VisibilityLabelArray: TVisibilityLabelArray;
     VisibilityArray: TVisibilityArray;
-    AllreadySolved: boolean;
   end;
 var
   FieldForm: TFieldForm;
@@ -346,7 +345,7 @@ end;
 
 procedure TFieldForm.CheckButtonClick(Sender: TObject);
 begin
-  if FieldProcessing.IsTrueSolution(UnitsArray, VisibilityArray, FieldSize) or AllreadySolved then
+  if FieldProcessing.IsTrueSolution(UnitsArray, VisibilityArray, FieldSize) then
     ShowMessage ('Решение верно!')
   else
     ShowMessage ('Решение неправильное!');
@@ -354,12 +353,9 @@ end;
 
 procedure TFieldForm.AutoSolutionButtonClick(Sender: TObject);
 begin
-  if not AllreadySolved then
-  begin
-    FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
-    DrawFieldFromUnitsArray;
-    AllreadySolved:= true;
-  end;
+  ClearUnitsArray (UnitsArray);
+  FieldProcessing.FindSolution(VisibilityArray, UnitsArray, FieldSize);
+  DrawFieldFromUnitsArray;
 end;
 
 procedure TFieldForm.OpenConditionClick(Sender: TObject);
@@ -368,14 +364,15 @@ var
 begin
   if OpenConditionDialog.Execute then
   begin
-    AllreadySolved:= false;
     ClearVisibilityBorder;
     ClearTheField;
     FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenConditionDialog.FileName);
     TempVisibilityArray:= VisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
     FieldSizeSpinEdit.Value:= FieldSize;
+    ClearVisibilityBorder;
     VisibilityArray:= TempVisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
     DrawVisibilityBorder;
+    DrawEmptyField;
     FieldProcessing.ResetPlacedVariantsArray (FieldSize);
     FieldProcessing.ResetUnitsStatsArray (FieldSize);
   end;
@@ -383,7 +380,6 @@ end;
 
 procedure TFieldForm.ClearButtonClick(Sender: TObject);
 begin
-  AllreadySolved:= false;
   DrawEmptyField;
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
   FieldProcessing.ResetUnitsStatsArray (FieldSize);
@@ -399,7 +395,6 @@ end;
 
 procedure TFieldForm.NewFieldButtonClick(Sender: TObject);
 begin
-  AllreadySolved:= false;
   ClearTheField;
   FieldGeneration.GenerateVisibilityArray (VisibilityArray, DiffucaltyTrackBar.Min, DiffucaltyTrackBar.Max, DiffucaltyTrackBar.Position, FieldSize);
   {VisibilityArray:= FieldGeneration.GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
