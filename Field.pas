@@ -61,7 +61,8 @@ type
     procedure HideUnit (Row, Col: shortint);
     procedure DrawVisibilityBorder;
     procedure ClearTheField;
-    procedure UnitClick(Sender: TObject);
+    procedure UnitMouseDown (Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
     procedure CheckButtonClick(Sender: TObject);
     procedure AutoSolutionButtonClick(Sender: TObject);
     procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
@@ -127,7 +128,7 @@ begin
   with ImageArray[Row, Col] do
   begin
     Cursor:= _ImageCursor;
-    OnClick:= UnitClick;
+    OnMouseDown:= UnitMouseDown;
     Tag:= Row * 10 + Col;//we use tag field to connect ImageArray and UnitsArray
     Parent:= FieldForm;
     Left:= _TopLeftFieldBorder.X + _BorderWidth +
@@ -295,7 +296,9 @@ begin
   end;
 end;
 
-procedure TFieldForm.UnitClick (Sender: TObject);
+procedure TFieldForm.UnitMouseDown (Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+  
   function GetRowFromTag (Tag: integer): integer;
   begin
     GetRowFromTag:= Tag div 10;
@@ -316,12 +319,23 @@ begin
     SenderImage:= Sender as TImage;
     Row:= GetRowFromTag (SenderImage.Tag);
     Col:= GetColFromTag (SenderImage.Tag);
-    if UnitsArray[Row, Col] = FieldSize then
-      UnitNumber:= 0
-    else
-    begin
-      UnitNumber:= UnitsArray[Row, Col];
-      Inc (UnitNumber);
+    case Button of
+    mbLeft:
+        if UnitsArray[Row, Col] = FieldSize then
+          UnitNumber:= 0
+        else
+        begin
+          UnitNumber:= UnitsArray[Row, Col];
+          Inc (UnitNumber);
+        end;
+    mbRight:
+        if UnitsArray[Row, Col] = 0 then
+          UnitNumber:= FieldSize
+        else
+        begin
+          UnitNumber:= UnitsArray[Row, Col];
+          Dec (UnitNumber);
+        end;
     end;
     DrawUnit (UnitNumber, Row, Col);
   end;
