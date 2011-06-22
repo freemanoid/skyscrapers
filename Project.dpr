@@ -12,6 +12,7 @@ uses
 
 begin
   Application.Initialize;
+  Application.Title := 'Небоскрёбы';
   Application.CreateForm(TFieldForm, FieldForm);
   Application.Run;
 end.

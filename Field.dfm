@@ -1,8 +1,9 @@
 object FieldForm: TFieldForm
-  Left = 280
-  Top = 1
+  Left = 404
+  Top = -6
   Width = 866
   Height = 754
+  Caption = #1043#1086#1083#1086#1074#1086#1083#1086#1084#1082#1072' "'#1085#1077#1073#1086#1089#1082#1088#1105#1073#1099'"'
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
