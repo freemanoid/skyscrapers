@@ -5,8 +5,8 @@ interface
 uses Field, SysUtils, Dialogs;
 
 const
-  ConditionExtension = 'skc';
-  FieldExtension = 'skf';
+  SkyScraperCondition = 'skc';
+  SkyScraperField = 'skf';
   _CheckMaxAndMinVisibility = 1;
   _CheckIfOnlyOneEmptyUnitOnLine = 1;
   _CheckIfOnlyOneVariantToLocateUnit = 6;
