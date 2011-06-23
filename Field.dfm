@@ -31,6 +31,24 @@ object FieldForm: TFieldForm
     AutoSize = False
     Caption = #1059#1088#1086#1074#1077#1085#1100' '#1089#1083#1086#1078#1085#1086#1089#1090#1080
   end
+  object GenerationLabel: TLabel
+    Left = 15
+    Top = 360
+    Width = 151
+    Height = 16
+    Alignment = taCenter
+    AutoSize = False
+    Caption = #1043#1077#1085#1077#1088#1072#1094#1080#1103' '#1091#1089#1083#1086#1074#1080#1103
+    Transparent = True
+  end
+  object GenerationProgressBar: TProgressBar
+    Left = 15
+    Top = 380
+    Width = 150
+    Height = 17
+    Smooth = True
+    TabOrder = 6
+  end
   object FieldSizeSpinEdit: TSpinEdit
     Left = 10
     Top = 35
@@ -91,14 +109,6 @@ object FieldForm: TFieldForm
     ShowHint = True
     TabOrder = 5
     OnChange = DiffucaltyTrackBarChange
-  end
-  object GenerationProgressBar: TProgressBar
-    Left = 20
-    Top = 365
-    Width = 150
-    Height = 17
-    Smooth = True
-    TabOrder = 6
   end
   object MainMenu: TMainMenu
     Top = 675

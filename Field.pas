@@ -56,6 +56,7 @@ type
     N3: TMenuItem;
     GenerationProgressBar: TProgressBar;
     GenerationTimer: TTimer;
+    GenerationLabel: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField;
@@ -114,6 +115,7 @@ begin
   //all field objects initialization
   Application.HintPause:= 0; //to have a dynamic hint in DiffucaltyTrackBar
   AutoSolutionButton.Enabled:= false;
+  GenerationLabel.Visible:= false;
   FieldSize:= _MaxFieldSize;
   DrawEmptyField;
   ClearTheField;
@@ -454,6 +456,7 @@ end;
 procedure TFieldForm.StartTimer;
 begin
   GenerationProgressBar.Position:= 0;
+  GenerationLabel.Visible:= true;
   FieldForm.Enabled:= false;
   case FieldSize of
   4: GenerationTimer.Interval:= 100;
@@ -464,6 +467,18 @@ begin
 end;
 
 procedure TFieldForm.StopTimer (ShowFullProgressBar: boolean);
+  procedure ClearGenerationLabel (var GenerationLabel: TLabel); //removes Tag dots from the end of GenerationLabel
+  var
+    NewLength: byte;
+    NewCaption: string;
+  begin           
+    NewLength:= Length (GenerationLabel.Caption) - GenerationLabel.Tag;
+    NewCaption:= GenerationLabel.Caption;
+    SetLength (NewCaption, NewLength);
+    GenerationLabel.Caption:= NewCaption;
+    GenerationLabel.Tag:= 0;
+  end;
+  
 begin
   if ShowFullProgressBar then
   begin
@@ -473,14 +488,42 @@ begin
   else
   begin
     GenerationTimer.Enabled:= false;
-    FieldForm.Enabled:= true;  
+    FieldForm.Enabled:= true; 
+    GenerationLabel.Visible:= false; 
+    ClearGenerationLabel (GenerationLabel);
   end;
 end;
 
 procedure TFieldForm.GenerationTimerTimer(Sender: TObject);
+  procedure ClearGenerationLabel (var GenerationLabel: TLabel); //removes Tag dots from the end of GenerationLabel
+  var
+    NewLength: byte;
+    NewCaption: string;
+  begin           
+    NewLength:= Length (GenerationLabel.Caption) - GenerationLabel.Tag;
+    NewCaption:= GenerationLabel.Caption;
+    SetLength (NewCaption, NewLength);
+    GenerationLabel.Caption:= NewCaption;
+    GenerationLabel.Tag:= 0;
+  end;
+  
+  procedure GenerationLabelNextStep (var GenerationLabel: TLabel);
+  begin
+    if GenerationLabel.Tag = 3 then
+      ClearGenerationLabel (GenerationLabel)
+    else
+    begin
+      GenerationLabel.Tag:= GenerationLabel.Tag + 1;
+      GenerationLabel.Caption:= GenerationLabel.Caption + '.';
+    end;
+  end;
+  
 begin
   if GenerationProgressBar.Position < 99 then
-    GenerationProgressBar.Position:= GenerationProgressBar.Position + 1
+  begin
+    GenerationProgressBar.Position:= GenerationProgressBar.Position + 1;
+    GenerationLabelNextStep (GenerationLabel);
+  end
   else
     if GenerationProgressBar.Position = 100 then
       StopTimer (false);
