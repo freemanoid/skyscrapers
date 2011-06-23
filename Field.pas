@@ -1,4 +1,9 @@
 unit Field;
+//Описание юнита:
+//Основной юнит, содержащий главную форму, методы отрисовки поля и обработчики событий
+//
+//
+//
 
 interface
 
@@ -57,26 +62,25 @@ type
     GenerationProgressBar: TProgressBar;
     GenerationTimer: TTimer;
     GenerationLabel: TLabel;
-    procedure FormCreate(Sender: TObject);
-    procedure DrawUnit (UnitNumber, Row, Col: shortint);
-    procedure DrawEmptyField;
-    procedure DrawFieldFromUnitsArray;
+    procedure FormCreate(Sender: TObject);  //инициализация переменных
+    procedure DrawUnit (UnitNumber, Row, Col: shortint); //отрисовка небоскрёба
+    procedure DrawEmptyField; //отрисовка пустого поля
+    procedure DrawFieldFromUnitsArray; //отрисовка поля из массива UnitsArray
     procedure FieldSizeSpinEditChange(Sender: TObject);
-    procedure HideUnit (Row, Col: shortint);
-    procedure DrawVisibilityBorder;
-    procedure ClearTheField;
+    procedure HideUnit (Row, Col: shortint); //убрать небоскрёб с поля
+    procedure DrawVisibilityBorder; //отрисовка рамки с видимостями
+    procedure ClearTheField; //очистить поле с небоскрёбами
     procedure UnitMouseDown (Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-    procedure CheckButtonClick(Sender: TObject);
+    procedure CheckButtonClick(Sender: TObject); 
     procedure AutoSolutionButtonClick(Sender: TObject);
-    procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint);
+    procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint); //добавить небоскрёб в массив со значениями (не отрисовка)
     procedure OpenConditionClick(Sender: TObject);
     procedure ClearButtonClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
-    procedure HideVisibilityUnit (UnitSide, UnitIndex: shortint);
-    procedure ClearVisibilityBorder;
-    procedure ClearUnitsArray (var UnitsArray: TUnitsArray);
-    procedure ClearVisibilityArray;
+    procedure HideVisibilityUnit (UnitSide, UnitIndex: shortint); //убрать один из элементов из рамки с видимостями
+    procedure ClearVisibilityBorder; //очистить рамку видимостей
+    procedure ClearUnitsArray (var UnitsArray: TUnitsArray); //очистить массив со значениями небоскрёбов
+    procedure ClearVisibilityArray; //очистить массив со значениями рамки видимостей
     procedure NewFieldButtonClick(Sender: TObject);
     procedure SaveConditionClick(Sender: TObject);
     procedure ExitClick(Sender: TObject);
@@ -85,14 +89,14 @@ type
     procedure OpenFieldClick(Sender: TObject);
     procedure GenerationTimerTimer(Sender: TObject);
   private
-    procedure StopTimer (ShowFullProgressBar: boolean);
-    procedure StartTimer;
+    procedure StopTimer (ShowFullProgressBar: boolean); //остановить таймер (используется при генерации условия)
+    procedure StartTimer; //запустить таймер (используется при генерации условия)
   public
-    ImageArray: TImageArray;
-    UnitsArray: TUnitsArray;
-    FieldSize: shortint;
-    VisibilityLabelArray: TVisibilityLabelArray;
-    VisibilityArray: TVisibilityArray;
+    ImageArray: TImageArray;  //массив изображений
+    UnitsArray: TUnitsArray;  //массив значений в поле
+    FieldSize: shortint;      //размер поля
+    VisibilityLabelArray: TVisibilityLabelArray; //массив TLabel, который содержит видимости 
+    VisibilityArray: TVisibilityArray; //массив значений видимостей
   end;
 var
   FieldForm: TFieldForm;
@@ -371,14 +375,6 @@ begin
   FieldProcessing.ResetPlacedVariantsArray (FieldSize);
   FieldProcessing.ResetUnitsStatsArray (FieldSize);
   AutoSolutionButton.Enabled:= true;
-end;
-
-procedure TFieldForm.Button1Click(Sender: TObject);
-begin
-  if FieldProcessing.IsTrueSolution(UnitsArray, VisibilityArray, FieldSize) then
-    ShowMessage ('Решение верно!')
-  else
-    ShowMessage ('Решение неправильное!');
 end;
 
 procedure TFieldForm.NewFieldButtonClick(Sender: TObject);

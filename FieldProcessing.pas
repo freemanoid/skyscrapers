@@ -1,12 +1,15 @@
 unit FieldProcessing;
+// Юнит содержит в себе методы обработки поля (проверка правильности решения, чтение и запись в файл,
+// поиск решений, подсчёт сложности сгенерированного поля)
 
 interface
 
 uses Field, SysUtils, Dialogs;
 
 const
-  SkyScraperCondition = 'skc';
-  SkyScraperField = 'skf';
+  SkyScraperCondition = 'skc'; //расширение файлов с условиями
+  SkyScraperField = 'skf'; //расширение файла с полем
+  //дальше идут константы, определяющие "сложность" того или метода поиска места для нового небоскрёба в авторешении
   _CheckMaxAndMinVisibility = 1;
   _CheckIfOnlyOneEmptyUnitOnLine = 1;
   _CheckIfOnlyOneVariantToLocateUnit = 6;
@@ -15,27 +18,26 @@ const
   _BruteforceRows = 20;
 
 type
-  TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean; //Containts such types of units
-  //that can be placed in the concrete unit
+  TPlacedVariantsArray = array[0..(Field._MaxFieldSize - 1)] of array[0..(Field._MaxFieldSize - 1)] of array[1..Field._MaxFieldSize] of boolean; //Содержит варианты постановки небоскрёбов для каждой клетки
   TCheckSet = set of 1..Field._MaxFieldSize;
   
-
-function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean;
-procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string);
-procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string);
-procedure WriteUnitsArrayToFile (UnitsArray: Field.TUnitsArray; FieldSize: shortint; FileName: string);
-procedure ReadUnitsArrayFromFile (var UnitsArray: Field.TUnitsArray; var FieldSize: shortint; FileName: string);
-function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean;
-procedure ResetPlacedVariantsArray (FieldSize: shortint);
-procedure ResetUnitsStatsArray (FieldSize: shortint);
-procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint);
-procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint);
-procedure SetClear (var SomeSet: TCheckSet);
-function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): smallint;
+function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean; //проверка правильности решения
+procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string); //запись условия в файл
+procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string); //чтение условия из файла
+procedure WriteUnitsArrayToFile (UnitsArray: Field.TUnitsArray; FieldSize: shortint; FileName: string); //запись поля в файл
+procedure ReadUnitsArrayFromFile (var UnitsArray: Field.TUnitsArray; var FieldSize: shortint; FileName: string); //чтение поля из файла
+function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean; //авторешение
+procedure ResetPlacedVariantsArray (FieldSize: shortint); //сбрасываем массив с вариантами постановки небоскрёбов
+procedure ResetUnitsStatsArray (FieldSize: shortint); //сбрасывает массив, содержащий статистику поставленных юнитов
+procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint); //обновляет массив вариантов постановки небоскрёбов в соответствии с новыми небоскрёбом, который только что поставили
+procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint); //сбрасывает множество
+procedure SetClear (var SomeSet: TCheckSet); //очищает множество
+function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): smallint; //подсчёт сложности сгенерированного условия (возвращает 0, если условие имеет больше одного решения)
 
 implementation
 
 type
+  //типы для работы с файлами
   TVisibilityRecord = record
     FieldSize: shortint;
     VisibilityArray: Field.TVisibilityArray;
@@ -46,14 +48,13 @@ type
   end;
   TVisibilityFile = file of TVisibilityRecord;
   TUnitsArrayFile = file of TUnitsArrayRecord;
-  TUnitStatsArray = array[1..Field._MaxFieldSize] of shortint;//Containts the "statistic" information about different types of
-  //units that have been already placed to their places. Array index - unit type, value - number of
-  //units of this type
+  TUnitStatsArray = array[1..Field._MaxFieldSize] of shortint; //массив, в котором содержится количество тех или иных небоскрёбов, которые поставили на поле
+  
   
 var
   UnitStats: TUnitStatsArray;
   PlacedVariants: TPlacedVariantsArray;
-  UnitsFoundCounter: shortint; //counter for units that have been found (it needs for diffucalty calculation)
+  UnitsFoundCounter: shortint; //счётчик для уже поставленных небоскрёбов (используется в подсчёте сложности условия)
 
 procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint); 
 var
@@ -103,7 +104,7 @@ begin
   if PreviousValue = 0 then
   begin
     Inc (UnitStats[UnitValue]);
-    Inc (UnitsFoundCounter); //counter for units that have been found (it needs for diffucalty calculation)
+    Inc (UnitsFoundCounter); //счётчик для уже поставленных небоскрёбов (используется в подсчёте сложности условия)
   end;
 end;
 
@@ -124,7 +125,7 @@ var
   MaxFloor: shortint;
   VisibilityCount: shortint;
 begin
-//repeat checking in rows and columns 
+  //repeat checking in rows and columns 
   Result:= true;
   SetReset (CheckSet, FieldSize); //we must identify set variable becouse it is empty by default :(
   //rows
@@ -275,8 +276,7 @@ begin
   Close (OutputFile);
 end;
 
-//Check visibility for max(fieldsize) and min(1) visibility, becouse in this way we can 
-//identify some skyscrapers
+//Check visibility for max(fieldsize) and min(1) visibility, becouse in this way we can identify some skyscrapers
 function CheckMaxAndMinVisibility (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; const FieldSize: shortint): boolean;
   procedure FillColumnAscending (var SomeArray: Field.TUnitsArray; ColNumber, FieldSize: shortint);
   var

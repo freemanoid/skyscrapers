@@ -1,4 +1,5 @@
 unit FieldGeneration;
+// Юнит содержит в себе метод генерации условия
 
 interface
 
@@ -6,8 +7,8 @@ uses
   Field, SysUtils, Dialogs;
 
 const
-  MinScore: array[4..6] of smallint = (43, 106, 424); //it was calculated using a cycle, 
-  //field generation and calculating function with current score constans of solution functions
+  MinScore: array[4..6] of smallint = (43, 106, 424); //минимальные значения сложности генерируемых условий для разных размеров доски
+  //эти значения были вычислены с помощью цикла, генерации условия и подсчёта сложности, используя текущие константы со сложностью для разных методов решения
   
 procedure GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; MinDiffucaltyLevel, MaxDiffucaltyLevel, DiffucaltyLevel, FieldSize: shortint);
 
