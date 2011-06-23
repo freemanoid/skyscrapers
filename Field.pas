@@ -382,10 +382,10 @@ end;
 procedure TFieldForm.NewFieldButtonClick(Sender: TObject);
 begin
   ClearTheField;
+  DrawEmptyField;
   StartTimer;
   FieldGeneration.GenerateVisibilityArray (VisibilityArray, DiffucaltyTrackBar.Min, DiffucaltyTrackBar.Max, DiffucaltyTrackBar.Position, FieldSize);
   StopTimer (true);
-  DrawEmptyField;
   DrawVisibilityBorder;
   AutoSolutionButton.Enabled:= true;
 end;
@@ -454,13 +454,12 @@ end;
 procedure TFieldForm.StartTimer;
 begin
   GenerationProgressBar.Position:= 0;
-  //FieldForm.Enabled:= false;
+  FieldForm.Enabled:= false;
   case FieldSize of
   4: GenerationTimer.Interval:= 100;
   5: GenerationTimer.Interval:= 500;
   6: GenerationTimer.Interval:= 1000;
   end;
-  Application.ProcessMessages;
   GenerationTimer.Enabled:= true;
 end;
 

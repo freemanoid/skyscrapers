@@ -14,7 +14,7 @@ procedure GenerateVisibilityArray (var VisibilityArray: Field.TVisibilityArray; 
 implementation
 
 uses
-  FieldProcessing;
+  FieldProcessing, Forms;
   
 function RandomButNotIn (var SomeSet: FieldProcessing.TCheckSet; MaxValue: shortint): shortint;
 begin
@@ -205,8 +205,10 @@ begin
   CurrScore:= FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize);
   while not ((CurrScore >= MinScore) and (CurrScore <= MaxScore)) do
   begin
+    Application.ProcessMessages;
     VisibilityArray:= GetVisibilityArrayFromUnitsArray (GenerateUnitsArray (FieldSize), FieldSize);
-    CurrScore:= FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize)
+    CurrScore:= FieldProcessing.CalculateDiffucultyScores (VisibilityArray, FieldSize);
+    Application.ProcessMessages;
   end;
 end;
 
