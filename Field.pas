@@ -54,6 +54,8 @@ type
     N1: TMenuItem;
     N2: TMenuItem;
     N3: TMenuItem;
+    GenerationProgressBar: TProgressBar;
+    GenerationTimer: TTimer;
     procedure FormCreate(Sender: TObject);
     procedure DrawUnit (UnitNumber, Row, Col: shortint);
     procedure DrawEmptyField;
@@ -80,8 +82,10 @@ type
     procedure DiffucaltyTrackBarChange(Sender: TObject);
     procedure SaveFieldClick(Sender: TObject);
     procedure OpenFieldClick(Sender: TObject);
+    procedure GenerationTimerTimer(Sender: TObject);
   private
-    { Private declarations }
+    procedure StopTimer (ShowFullProgressBar: boolean);
+    procedure StartTimer;
   public
     ImageArray: TImageArray;
     UnitsArray: TUnitsArray;
@@ -378,7 +382,9 @@ end;
 procedure TFieldForm.NewFieldButtonClick(Sender: TObject);
 begin
   ClearTheField;
+  StartTimer;
   FieldGeneration.GenerateVisibilityArray (VisibilityArray, DiffucaltyTrackBar.Min, DiffucaltyTrackBar.Max, DiffucaltyTrackBar.Position, FieldSize);
+  StopTimer (true);
   DrawEmptyField;
   DrawVisibilityBorder;
   AutoSolutionButton.Enabled:= true;
@@ -443,6 +449,43 @@ begin
   end;
   DrawVisibilityBorder;
   DrawEmptyField;
+end;
+
+procedure TFieldForm.StartTimer;
+begin
+  GenerationProgressBar.Position:= 0;
+  //FieldForm.Enabled:= false;
+  case FieldSize of
+  4: GenerationTimer.Interval:= 100;
+  5: GenerationTimer.Interval:= 500;
+  6: GenerationTimer.Interval:= 1000;
+  end;
+  Application.ProcessMessages;
+  GenerationTimer.Enabled:= true;
+end;
+
+procedure TFieldForm.StopTimer (ShowFullProgressBar: boolean);
+begin
+  if ShowFullProgressBar then
+  begin
+    GenerationProgressBar.Position:= 100;
+    GenerationTimer.Interval:= 500;
+  end
+  else
+  begin
+    GenerationTimer.Enabled:= false;
+    FieldForm.Enabled:= true;  
+  end;
+end;
+
+procedure TFieldForm.GenerationTimerTimer(Sender: TObject);
+begin
+  if GenerationProgressBar.Position < 99 then
+    GenerationProgressBar.Position:= GenerationProgressBar.Position + 1
+  else
+    if GenerationProgressBar.Position = 100 then
+      StopTimer (false);
+  GenerationProgressBar.Repaint;
 end;
 
 initialization

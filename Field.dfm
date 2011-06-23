@@ -92,6 +92,14 @@ object FieldForm: TFieldForm
     TabOrder = 5
     OnChange = DiffucaltyTrackBarChange
   end
+  object GenerationProgressBar: TProgressBar
+    Left = 20
+    Top = 365
+    Width = 150
+    Height = 17
+    Smooth = True
+    TabOrder = 6
+  end
   object MainMenu: TMainMenu
     Top = 675
     object MainMenuItemFile: TMenuItem
@@ -152,6 +160,12 @@ object FieldForm: TFieldForm
     Filter = 'skyscraper condition (*.skc)|*.skc'
     InitialDir = 'conditions'
     Left = 50
+    Top = 675
+  end
+  object GenerationTimer: TTimer
+    Enabled = False
+    OnTimer = GenerationTimerTimer
+    Left = 130
     Top = 675
   end
 end
