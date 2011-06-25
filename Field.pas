@@ -63,7 +63,7 @@ type
     GenerationLabel: TLabel;
     GenerationPanel: TPanel;
     ExitButton: TButton;
-    procedure FormCreate(Sender: TObject);  //инициализация переменных
+    procedure FormCreate (Sender: TObject);  //инициализация переменных
     procedure DrawUnit (UnitNumber, Row, Col: shortint); //отрисовка небоскрёба
     procedure DrawEmptyField; //отрисовка пустого поля
     procedure DrawFieldFromUnitsArray; //отрисовка поля из массива UnitsArray
@@ -124,6 +124,7 @@ begin
   Application.HintPause:= 0; //to have a dynamic hint in DiffucaltyTrackBar
   AutoSolutionButton.Enabled:= false;
   GenerationLabel.Visible:= false;
+  GenerationProgressBar.Visible:= false;
   FieldSize:= _MaxFieldSize;
   DrawEmptyField;
   ClearTheField;
@@ -458,6 +459,7 @@ procedure TFieldForm.StartTimer;
 begin
   GenerationProgressBar.Position:= 0;
   GenerationLabel.Visible:= true;
+  GenerationProgressBar.Visible:= true;
   FieldForm.Enabled:= false;
   case FieldSize of
   4: GenerationTimer.Interval:= 100;
@@ -478,6 +480,7 @@ procedure TFieldForm.StopTimer (ShowFullProgressBar: boolean);
     SetLength (NewCaption, NewLength);
     GenerationLabel.Caption:= NewCaption;
     GenerationLabel.Tag:= 0;
+    GenerationProgressBar.Visible:= false;
   end;
   
 begin
@@ -528,7 +531,6 @@ begin
   else
     if GenerationProgressBar.Position = 100 then
       StopTimer (false);
-  GenerationProgressBar.Repaint;
 end;
 
 procedure TFieldForm.HelpMenuItemClick(Sender: TObject);
