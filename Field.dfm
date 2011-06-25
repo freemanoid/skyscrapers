@@ -121,6 +121,14 @@ object FieldForm: TFieldForm
       OnChange = DiffucaltyTrackBarChange
     end
   end
+  object ExitButton: TButton
+    Left = 30
+    Top = 495
+    Width = 75
+    Height = 25
+    Caption = #1042#1099#1093#1086#1076
+    TabOrder = 6
+    OnClick = ExitButtonClick
   end
   object MainMenu: TMainMenu
     Top = 675
