@@ -62,6 +62,7 @@ type
     GenerationTimer: TTimer;
     GenerationLabel: TLabel;
     GenerationPanel: TPanel;
+    ExitButton: TButton;
     procedure FormCreate(Sender: TObject);  //инициализация переменных
     procedure DrawUnit (UnitNumber, Row, Col: shortint); //отрисовка небоскрёба
     procedure DrawEmptyField; //отрисовка пустого поля
@@ -528,6 +529,10 @@ begin
 end;
 
 initialization
+procedure TFieldForm.ExitButtonClick(Sender: TObject);
+begin
+  FieldForm.Close;
+end;
 
 end.
 
