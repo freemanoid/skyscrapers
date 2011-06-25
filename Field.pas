@@ -89,6 +89,7 @@ type
     procedure SaveFieldClick(Sender: TObject);
     procedure OpenFieldClick(Sender: TObject);
     procedure GenerationTimerTimer(Sender: TObject);
+    procedure ExitButtonClick(Sender: TObject);
   private
     procedure StopTimer (ShowFullProgressBar: boolean); //остановить таймер (используется при генерации условия)
     procedure StartTimer; //запустить таймер (используется при генерации условия)
