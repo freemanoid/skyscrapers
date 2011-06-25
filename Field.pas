@@ -8,7 +8,7 @@ interface
 
 uses
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Spin, Menus, ComCtrls;
+  Dialogs, ExtCtrls, StdCtrls, Spin, Menus, ComCtrls, ShellApi;
 
 const
   _UnitWidth = 81;
@@ -89,6 +89,8 @@ type
     procedure SaveFieldMenuItemClick(Sender: TObject);
     procedure OpenFieldMenuItemClick(Sender: TObject);
     procedure GenerationTimerTimer(Sender: TObject);
+    procedure HelpMenuItemClick(Sender: TObject);
+    procedure AboutMenuItemClick(Sender: TObject);
     procedure ExitButtonClick(Sender: TObject);
   private
     procedure StopTimer (ShowFullProgressBar: boolean); //остановить таймер (используется при генерации условия)
@@ -529,7 +531,16 @@ begin
   GenerationProgressBar.Repaint;
 end;
 
-initialization
+procedure TFieldForm.HelpMenuItemClick(Sender: TObject);
+begin
+  ShellExecute (0, 'Open', PChar (ExtractFilePath (Application.ExeName) + 'help.chm'), nil, nil, 1);
+end;
+
+procedure TFieldForm.AboutMenuItemClick(Sender: TObject);
+begin
+  Application.MessageBox ('Курсовой проект:' + #13#10 + 'выполнил учащийся группы 93492 МГВРК' + #13#10 + 'Елховенко А.И.' + #13#10#13#10 + 'Минск 2011', 'О программе'); 
+end;
+
 procedure TFieldForm.ExitButtonClick(Sender: TObject);
 begin
   FieldForm.Close;
