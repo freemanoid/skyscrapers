@@ -26,18 +26,9 @@ object FieldForm: TFieldForm
     Height = 13
     Caption = #1056#1072#1079#1084#1077#1088' '#1087#1086#1083#1103': '
   end
-  object DiffucaltyLabel: TLabel
-    Left = 10
-    Top = 250
-    Width = 151
-    Height = 13
-    Alignment = taCenter
-    AutoSize = False
-    Caption = #1059#1088#1086#1074#1077#1085#1100' '#1089#1083#1086#1078#1085#1086#1089#1090#1080
-  end
   object GenerationLabel: TLabel
-    Left = 15
-    Top = 360
+    Left = 5
+    Top = 350
     Width = 151
     Height = 16
     Alignment = taCenter
@@ -46,12 +37,12 @@ object FieldForm: TFieldForm
     Transparent = True
   end
   object GenerationProgressBar: TProgressBar
-    Left = 15
-    Top = 380
+    Left = 5
+    Top = 370
     Width = 150
     Height = 17
     Smooth = True
-    TabOrder = 6
+    TabOrder = 4
   end
   object FieldSizeSpinEdit: TSpinEdit
     Left = 10
@@ -92,27 +83,44 @@ object FieldForm: TFieldForm
     TabOrder = 3
     OnClick = ClearButtonClick
   end
-  object NewFieldButton: TButton
+  object GenerationPanel: TPanel
     Left = 5
-    Top = 310
-    Width = 156
-    Height = 25
-    Caption = #1057#1086#1079#1076#1072#1090#1100' '#1087#1086#1083#1077
-    TabOrder = 4
-    OnClick = NewFieldButtonClick
-  end
-  object DiffucaltyTrackBar: TTrackBar
-    Left = 10
-    Top = 265
-    Width = 150
-    Height = 31
-    Max = 3
-    Min = 1
-    ParentShowHint = False
-    Position = 1
-    ShowHint = True
+    Top = 225
+    Width = 161
+    Height = 111
     TabOrder = 5
-    OnChange = DiffucaltyTrackBarChange
+    object DiffucaltyLabel: TLabel
+      Left = 0
+      Top = 18
+      Width = 151
+      Height = 13
+      Alignment = taCenter
+      AutoSize = False
+      Caption = #1059#1088#1086#1074#1077#1085#1100' '#1089#1083#1086#1078#1085#1086#1089#1090#1080
+    end
+    object NewFieldButton: TButton
+      Left = 0
+      Top = 66
+      Width = 156
+      Height = 25
+      Caption = #1057#1086#1079#1076#1072#1090#1100' '#1087#1086#1083#1077
+      TabOrder = 0
+      OnClick = NewFieldButtonClick
+    end
+    object DiffucaltyTrackBar: TTrackBar
+      Left = 0
+      Top = 30
+      Width = 150
+      Height = 31
+      Max = 3
+      Min = 1
+      ParentShowHint = False
+      Position = 1
+      ShowHint = True
+      TabOrder = 1
+      OnChange = DiffucaltyTrackBarChange
+    end
+  end
   end
   object MainMenu: TMainMenu
     Top = 675

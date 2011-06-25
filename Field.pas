@@ -61,6 +61,7 @@ type
     GenerationProgressBar: TProgressBar;
     GenerationTimer: TTimer;
     GenerationLabel: TLabel;
+    GenerationPanel: TPanel;
     procedure FormCreate(Sender: TObject);  //инициализация переменных
     procedure DrawUnit (UnitNumber, Row, Col: shortint); //отрисовка небоскрёба
     procedure DrawEmptyField; //отрисовка пустого поля
