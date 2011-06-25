@@ -29,7 +29,6 @@ procedure ReadUnitsArrayFromFile (var UnitsArray: Field.TUnitsArray; var FieldSi
 function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean; //авторешение
 procedure ResetPlacedVariantsArray (FieldSize: shortint); //сбрасываем массив с вариантами постановки небоскрёбов
 procedure ResetUnitsStatsArray (FieldSize: shortint); //сбрасывает массив, содержащий статистику поставленных юнитов
-procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint); //обновляет массив вариантов постановки небоскрёбов в соответствии с новыми небоскрёбом, который только что поставили
 procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint); //сбрасывает множество
 procedure SetClear (var SomeSet: TCheckSet); //очищает множество
 function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): smallint; //подсчёт сложности сгенерированного условия (возвращает 0, если условие имеет больше одного решения)
@@ -56,6 +55,35 @@ var
   PlacedVariants: TPlacedVariantsArray;
   UnitsFoundCounter: shortint; //счётчик для уже поставленных небоскрёбов (используется в подсчёте сложности условия)
 
+procedure RemovePlacedVariant (var PlacedVariants: TPlacedVariantsArray; Variant, Row, Col: shortint);
+begin
+  PlacedVariants[Row][Col][Variant]:= false;
+end;
+
+procedure RemoveAllPlacedVariantsExcept (var PlacedVariants: TPlacedVariantsArray; Variant, Row, Col, FieldSize: shortint);
+var
+  itrVariant: shortint;
+begin
+  for itrVariant:= 1 to FieldSize do
+    PlacedVariants[Row][Col][itrVariant]:= false;
+  PlacedVariants[Row][Col][Variant]:= true;
+end;
+
+procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint);
+var
+  itrRow, itrCol: shortint;
+begin
+  for itrRow:= 0 to Row - 1 do
+    RemovePlacedVariant (PlacedVariants, UnitValue, itrRow, Col);
+  for itrRow:= Row + 1 to FieldSize - 1 do
+    RemovePlacedVariant (PlacedVariants, UnitValue, itrRow, Col);
+  for itrCol:= 0 to Col - 1 do
+    RemovePlacedVariant (PlacedVariants, UnitValue, Row, itrCol);
+  for itrCol:= Col + 1 to FieldSize - 1 do
+    RemovePlacedVariant (PlacedVariants, UnitValue, Row, itrCol);
+  RemoveAllPlacedVariantsExcept (PlacedVariants, UnitValue, Row, Col, FieldSize);
+end;
+  
 procedure SetPlacedVariantsAccordingToVisibility (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint); 
 var
   itrVis, itrUnit, itrVariants: integer;
@@ -470,35 +498,6 @@ end;
 procedure AddPlacedVariant (var PlacedVariants: TPlacedVariantsArray; Variant, Row, Col: shortint);
 begin
   PlacedVariants[Row][Col][Variant]:= true;
-end;
-
-procedure RemovePlacedVariant (var PlacedVariants: TPlacedVariantsArray; Variant, Row, Col: shortint);
-begin
-  PlacedVariants[Row][Col][Variant]:= false;
-end;
-
-procedure RemoveAllPlacedVariantsExcept (var PlacedVariants: TPlacedVariantsArray; Variant, Row, Col, FieldSize: shortint);
-var
-  itrVariant: shortint;
-begin
-  for itrVariant:= 1 to FieldSize do
-    PlacedVariants[Row][Col][itrVariant]:= false;
-  PlacedVariants[Row][Col][Variant]:= true;
-end;
-
-procedure UpdatePlacedVariantsAccordingToNewUnit (var PlacedVariants: TPlacedVariantsArray; UnitValue, Row, Col, FieldSize: shortint);
-var
-  itrRow, itrCol: shortint;
-begin
-  for itrRow:= 0 to Row - 1 do
-    RemovePlacedVariant (PlacedVariants, UnitValue, itrRow, Col);
-  for itrRow:= Row + 1 to FieldSize - 1 do
-    RemovePlacedVariant (PlacedVariants, UnitValue, itrRow, Col);
-  for itrCol:= 0 to Col - 1 do
-    RemovePlacedVariant (PlacedVariants, UnitValue, Row, itrCol);
-  for itrCol:= Col + 1 to FieldSize - 1 do
-    RemovePlacedVariant (PlacedVariants, UnitValue, Row, itrCol);
-  RemoveAllPlacedVariantsExcept (PlacedVariants, UnitValue, Row, Col, FieldSize);
 end;
 
 function UpdateUnitsArrayAccordingToPlacedVariants (var UnitsArray: Field.TUnitsArray;
