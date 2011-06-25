@@ -1,6 +1,6 @@
-program Project;
+program Skyscrapers;
 
-{%ToDo 'Project.todo'}
+{%ToDo 'Skyscrapers.todo'}
 
 uses
   Forms,
