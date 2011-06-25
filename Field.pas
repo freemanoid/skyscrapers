@@ -43,21 +43,21 @@ type
     MainMenu: TMainMenu;
     OpenFieldDialog: TOpenDialog;
     MainMenuItemFile: TMenuItem;
-    OpenCondition: TMenuItem;
+    OpenConditionMenuItem: TMenuItem;
     ClearButton: TButton;
     NewFieldButton: TButton;
-    SaveCondition: TMenuItem;
-    SaveField: TMenuItem;
-    OpenField: TMenuItem;
-    Exit: TMenuItem;
+    SaveConditionMenuItem: TMenuItem;
+    SaveFieldMenuItem: TMenuItem;
+    OpenFieldMenuItem: TMenuItem;
+    ExitMenuItem: TMenuItem;
     SaveFieldDialog: TSaveDialog;
     DiffucaltyTrackBar: TTrackBar;
     DiffucaltyLabel: TLabel;
     OpenConditionDialog: TOpenDialog;
     SaveConditionDialog: TSaveDialog;
     N1: TMenuItem;
-    N2: TMenuItem;
-    N3: TMenuItem;
+    HelpMenuItem: TMenuItem;
+    AboutMenuItem: TMenuItem;
     GenerationProgressBar: TProgressBar;
     GenerationTimer: TTimer;
     GenerationLabel: TLabel;
@@ -76,18 +76,18 @@ type
     procedure CheckButtonClick(Sender: TObject); 
     procedure AutoSolutionButtonClick(Sender: TObject);
     procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint); //добавить небоскрёб в массив со значениями (не отрисовка)
-    procedure OpenConditionClick(Sender: TObject);
+    procedure OpenConditionMenuItemClick(Sender: TObject);
     procedure ClearButtonClick(Sender: TObject);
     procedure HideVisibilityUnit (UnitSide, UnitIndex: shortint); //убрать один из элементов из рамки с видимостями
     procedure ClearVisibilityBorder; //очистить рамку видимостей
     procedure ClearUnitsArray (var UnitsArray: TUnitsArray); //очистить массив со значениями небоскрёбов
     procedure ClearVisibilityArray; //очистить массив со значениями рамки видимостей
     procedure NewFieldButtonClick(Sender: TObject);
-    procedure SaveConditionClick(Sender: TObject);
-    procedure ExitClick(Sender: TObject);
+    procedure SaveConditionMenuItemClick(Sender: TObject);
+    procedure ExitMenuItemClick(Sender: TObject);
     procedure DiffucaltyTrackBarChange(Sender: TObject);
-    procedure SaveFieldClick(Sender: TObject);
-    procedure OpenFieldClick(Sender: TObject);
+    procedure SaveFieldMenuItemClick(Sender: TObject);
+    procedure OpenFieldMenuItemClick(Sender: TObject);
     procedure GenerationTimerTimer(Sender: TObject);
     procedure ExitButtonClick(Sender: TObject);
   private
@@ -351,7 +351,7 @@ begin
   AutoSolutionButton.Enabled:= false;
 end;
 
-procedure TFieldForm.OpenConditionClick(Sender: TObject);
+procedure TFieldForm.OpenConditionMenuItemClick(Sender: TObject);
 var
   TempVisibilityArray: TVisibilityArray;
 begin
@@ -391,13 +391,13 @@ begin
   AutoSolutionButton.Enabled:= true;
 end;
 
-procedure TFieldForm.SaveConditionClick(Sender: TObject);
+procedure TFieldForm.SaveConditionMenuItemClick(Sender: TObject);
 begin
   if SaveConditionDialog.Execute then
     FieldProcessing.WriteVisibilityArraysToFile (VisibilityArray, FieldSize, SaveConditionDialog.FileName);
 end;
 
-procedure TFieldForm.ExitClick(Sender: TObject);
+procedure TFieldForm.ExitMenuItemClick(Sender: TObject);
 begin
   FieldForm.Close;
 end;
@@ -408,13 +408,13 @@ begin
   DiffucaltyTrackBar.Hint:= IntToStr (DiffucaltyTrackBar.Position);
 end;
 
-procedure TFieldForm.SaveFieldClick(Sender: TObject);
+procedure TFieldForm.SaveFieldMenuItemClick(Sender: TObject);
 begin
   if SaveFieldDialog.Execute then
     FieldProcessing.WriteUnitsArrayToFile (UnitsArray, FieldSize, SaveFieldDialog.FileName);  
 end;
 
-procedure TFieldForm.OpenFieldClick(Sender: TObject);
+procedure TFieldForm.OpenFieldMenuItemClick(Sender: TObject);
 var
   TempUnitsArray: TUnitsArray;
 begin

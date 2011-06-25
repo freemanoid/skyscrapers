@@ -134,34 +134,36 @@ object FieldForm: TFieldForm
     Top = 675
     object MainMenuItemFile: TMenuItem
       Caption = #1060#1072#1081#1083
-      object SaveCondition: TMenuItem
+      object SaveConditionMenuItem: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
-        OnClick = SaveConditionClick
+        OnClick = SaveConditionMenuItemClick
       end
-      object SaveField: TMenuItem
+      object SaveFieldMenuItem: TMenuItem
         Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1086#1083#1077
-        OnClick = SaveFieldClick
+        OnClick = SaveFieldMenuItemClick
       end
-      object OpenCondition: TMenuItem
+      object OpenConditionMenuItem: TMenuItem
         Caption = #1054#1090#1082#1088#1099#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
-        OnClick = OpenConditionClick
+        OnClick = OpenConditionMenuItemClick
       end
-      object OpenField: TMenuItem
+      object OpenFieldMenuItem: TMenuItem
         Caption = #1054#1090#1082#1088#1099#1090#1100' '#1087#1086#1083#1077
-        OnClick = OpenFieldClick
+        OnClick = OpenFieldMenuItemClick
       end
-      object Exit: TMenuItem
+      object ExitMenuItem: TMenuItem
         Caption = #1042#1099#1093#1086#1076
-        OnClick = ExitClick
+        OnClick = ExitMenuItemClick
       end
     end
     object N1: TMenuItem
       Caption = #1057#1087#1088#1072#1074#1082#1072
-      object N2: TMenuItem
+      object HelpMenuItem: TMenuItem
         Caption = #1057#1087#1088#1072#1074#1082#1072
+        OnClick = HelpMenuItemClick
       end
-      object N3: TMenuItem
+      object AboutMenuItem: TMenuItem
         Caption = #1054' '#1087#1088#1086#1075#1088#1072#1084#1084#1077
+        OnClick = AboutMenuItemClick
       end
     end
   end
