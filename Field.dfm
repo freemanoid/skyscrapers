@@ -1,10 +1,14 @@
 object FieldForm: TFieldForm
-  Left = 399
-  Top = 20
-  Width = 866
-  Height = 754
-  Caption = #1043#1086#1083#1086#1074#1086#1083#1086#1084#1082#1072' "'#1085#1077#1073#1086#1089#1082#1088#1105#1073#1099'"'
+  Left = 419
+  Top = -3
+  Width = 800
+  Height = 750
+  Caption = #1053#1077#1073#1086#1089#1082#1088#1105#1073#1099
   Color = clBtnFace
+  Constraints.MaxHeight = 750
+  Constraints.MaxWidth = 800
+  Constraints.MinHeight = 750
+  Constraints.MinWidth = 800
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
