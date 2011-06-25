@@ -149,6 +149,7 @@ begin
     if (UnitNumber > _MaxFieldSize) or (UnitNumber < 0) then
       ShowMessage (Format ('Ошибка: высота небоскрёба не может быть равной %d (должна быть от 0 до 6)', [UnitNumber]));
     Picture.LoadFromFile (ExtractFilePath (Application.ExeName) + _PicturesDir + IntToStr (UnitNumber) + '.bmp'); //UnitNumber must be in 0-6
+    Transparent:= true;
     Show;
   end;
 end;
