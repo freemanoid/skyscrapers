@@ -1,6 +1,6 @@
 object FieldForm: TFieldForm
-  Left = 419
-  Top = -3
+  Left = 438
+  Top = -1
   Width = 800
   Height = 750
   Caption = #1053#1077#1073#1086#1089#1082#1088#1105#1073#1099
@@ -134,21 +134,13 @@ object FieldForm: TFieldForm
     Top = 675
     object MainMenuItemFile: TMenuItem
       Caption = #1060#1072#1081#1083
-      object SaveConditionMenuItem: TMenuItem
-        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
-        OnClick = SaveConditionMenuItemClick
+      object SaveGameMenuItem: TMenuItem
+        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1080#1075#1088#1091
+        OnClick = SaveGameMenuItemClick
       end
-      object SaveFieldMenuItem: TMenuItem
-        Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1087#1086#1083#1077
-        OnClick = SaveFieldMenuItemClick
-      end
-      object OpenConditionMenuItem: TMenuItem
-        Caption = #1054#1090#1082#1088#1099#1090#1100' '#1091#1089#1083#1086#1074#1080#1077
-        OnClick = OpenConditionMenuItemClick
-      end
-      object OpenFieldMenuItem: TMenuItem
-        Caption = #1054#1090#1082#1088#1099#1090#1100' '#1087#1086#1083#1077
-        OnClick = OpenFieldMenuItemClick
+      object LoadGameMenuItem: TMenuItem
+        Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100' '#1080#1075#1088#1091
+        OnClick = LoadGameMenuItemClick
       end
       object ExitMenuItem: TMenuItem
         Caption = #1042#1099#1093#1086#1076
@@ -167,37 +159,21 @@ object FieldForm: TFieldForm
       end
     end
   end
-  object OpenFieldDialog: TOpenDialog
-    DefaultExt = 'skf'
-    Filter = 'skyscraper field (*.skf)|*.skf'
-    InitialDir = 'fields'
-    Left = 75
-    Top = 675
-  end
-  object SaveFieldDialog: TSaveDialog
-    DefaultExt = 'skf'
-    Filter = 'skyscraper field (*.skf)|*.skf'
-    InitialDir = 'fields'
-    Left = 25
-    Top = 675
-  end
-  object OpenConditionDialog: TOpenDialog
-    DefaultExt = 'skc'
-    Filter = 'skyscraper condition (*.skc)|*.skc'
-    Left = 100
-    Top = 675
-  end
-  object SaveConditionDialog: TSaveDialog
-    DefaultExt = 'skc'
-    Filter = 'skyscraper condition (*.skc)|*.skc'
-    InitialDir = 'conditions'
-    Left = 50
-    Top = 675
-  end
   object GenerationTimer: TTimer
     Enabled = False
     OnTimer = GenerationTimerTimer
-    Left = 130
+    Left = 90
+    Top = 675
+  end
+  object SaveGameDialog: TSaveDialog
+    DefaultExt = 'sks'
+    Left = 30
+    Top = 675
+  end
+  object LoadGameDialog: TOpenDialog
+    DefaultExt = 'sks'
+    Filter = 'Skyscraper file (*.sks)|*.sks'
+    Left = 60
     Top = 675
   end
 end

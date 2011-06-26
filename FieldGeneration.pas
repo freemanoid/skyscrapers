@@ -110,6 +110,7 @@ function GenerateUnitsArray(FieldSize: shortint): Field.TUnitsArray;
 var
   itr, itrRow: shortint;
 begin
+  Field.FieldForm.ClearUnitsArray (Result);
   itrRow:= 0;
   while itrRow <= FieldSize - 1 do
   begin

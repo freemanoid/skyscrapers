@@ -7,8 +7,7 @@ interface
 uses Field, SysUtils, Dialogs;
 
 const
-  SkyScraperCondition = 'skc'; //расширение файлов с услови€ми
-  SkyScraperField = 'skf'; //расширение файла с полем
+  _SkyscraperFileExt: string = 'sks';
   //дальше идут константы, определ€ющие "сложность" того или метода поиска места дл€ нового небоскрЄба в авторешении
   _CheckMaxAndMinVisibility = 1;
   _CheckIfOnlyOneEmptyUnitOnLine = 1;
@@ -22,31 +21,25 @@ type
   TCheckSet = set of 1..Field._MaxFieldSize;
   
 function IsTrueSolution (UnitsArray: TUnitsArray; VisibilityArray: TVisibilityArray; FieldSize: shortint): boolean; //проверка правильности решени€
-procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string); //запись услови€ в файл
-procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string); //чтение услови€ из файла
-procedure WriteUnitsArrayToFile (UnitsArray: Field.TUnitsArray; FieldSize: shortint; FileName: string); //запись пол€ в файл
-procedure ReadUnitsArrayFromFile (var UnitsArray: Field.TUnitsArray; var FieldSize: shortint; FileName: string); //чтение пол€ из файла
 function FindSolution (VisibilityArray: Field.TVisibilityArray; var UnitsArray: Field.TUnitsArray; FieldSize: shortint): boolean; //авторешение
 procedure ResetPlacedVariantsArray (FieldSize: shortint); //сбрасываем массив с вариантами постановки небоскрЄбов
 procedure ResetUnitsStatsArray (FieldSize: shortint); //сбрасывает массив, содержащий статистику поставленных юнитов
 procedure SetReset (var SomeSet: TCheckSet; MaxValue: shortint); //сбрасывает множество
 procedure SetClear (var SomeSet: TCheckSet); //очищает множество
 function CalculateDiffucultyScores (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint): smallint; //подсчЄт сложности сгенерированного услови€ (возвращает 0, если условие имеет больше одного решени€)
+procedure SaveGameToFile (VisibilityArray: Field.TVisibilityArray; UnitsArray: TUnitsArray; FieldSize: shortint; FileName: string);
+procedure LoadGameFromFile (var VisibilityArray: Field.TVisibilityArray; var UnitsArray: TUnitsArray; var FieldSize: shortint; FileName: string);
 
 implementation
 
 type
   //типы дл€ работы с файлами
-  TVisibilityRecord = record
+  TGameRecord = record
     FieldSize: shortint;
     VisibilityArray: Field.TVisibilityArray;
-  end;
-  TUnitsArrayRecord = record
-    FieldSize: shortint;
     UnitsArray: Field.TUnitsArray;
   end;
-  TVisibilityFile = file of TVisibilityRecord;
-  TUnitsArrayFile = file of TUnitsArrayRecord;
+  TGameFile = file of TGameRecord;
   TUnitStatsArray = array[1..Field._MaxFieldSize] of shortint; //массив, в котором содержитс€ количество тех или иных небоскрЄбов, которые поставили на поле
   
   
@@ -267,41 +260,6 @@ begin
         end;
     end;
   end;
-end;
-
-procedure ReadVisibilityArraysFromFile (var VisibilityArray: Field.TVisibilityArray; var FieldSize: shortint; FileName: string);
-var
-  InputFile: TVisibilityFile;
-  FileRecord: TVisibilityRecord;
-begin
-  AssignFile (InputFile, FileName);
-  Reset (InputFile);
-  try
-    Read (InputFile, FileRecord);
-  except
-    on E : EInOutError do 
-    begin
-      ShowMessage ('‘ормат файла не верный');
-      Close (InputFile);
-      Exit;
-    end;
-  end;
-  Close (InputFile);
-  FieldSize:= FileRecord.FieldSize;
-  VisibilityArray:= FileRecord.VisibilityArray;
-end;
-
-procedure WriteVisibilityArraysToFile (VisibilityArray: Field.TVisibilityArray; FieldSize: shortint; FileName: string);
-var
-  OutputFile: TVisibilityFile;
-  FileRecord: TVisibilityRecord;
-begin
-  FileRecord.FieldSize:= FieldSize;
-  FileRecord.VisibilityArray:= VisibilityArray;
-  AssignFile (OutputFile, FileName);
-  Rewrite (OutputFile);
-  Write (OutputFile, FileRecord);
-  Close (OutputFile);
 end;
 
 //Check visibility for max(fieldsize) and min(1) visibility, becouse in this way we can identify some skyscrapers
@@ -890,23 +848,24 @@ begin
   Inc (Result, _BruteforceRows * (UnitsFoundCounter - PrevUnitsFoundCounter));
 end;
 
-procedure WriteUnitsArrayToFile (UnitsArray: Field.TUnitsArray; FieldSize: shortint; FileName: string);
+procedure SaveGameToFile (VisibilityArray: Field.TVisibilityArray; UnitsArray: TUnitsArray; FieldSize: shortint; FileName: string);
 var
-  OutputFile: TUnitsArrayFile;
-  FileRecord: TUnitsArrayRecord;
+  OutputFile: TGameFile;
+  FileRecord: TGameRecord;
 begin
   FileRecord.FieldSize:= FieldSize;
   FileRecord.UnitsArray:= UnitsArray;
+  FileRecord.VisibilityArray:= VisibilityArray;
   AssignFile (OutputFile, FileName);
   Rewrite (OutputFile);
   Write (OutputFile, FileRecord);
   Close (OutputFile);
-end; 
+end;
 
-procedure ReadUnitsArrayFromFile (var UnitsArray: Field.TUnitsArray; var FieldSize: shortint; FileName: string);
+procedure LoadGameFromFile (var VisibilityArray: Field.TVisibilityArray; var UnitsArray: TUnitsArray; var FieldSize: shortint; FileName: string);
 var
-  InputFile: TUnitsArrayFile;
-  FileRecord: TUnitsArrayRecord;
+  InputFile: TGameFile;
+  FileRecord: TGameRecord;
 begin
   AssignFile (InputFile, FileName);
   Reset (InputFile);
@@ -920,9 +879,10 @@ begin
       Exit;
     end;
   end;
-  Close (InputFile);
   FieldSize:= FileRecord.FieldSize;
   UnitsArray:= FileRecord.UnitsArray;
+  VisibilityArray:= FileRecord.VisibilityArray;
+  Close (InputFile);
 end;
 
 end.

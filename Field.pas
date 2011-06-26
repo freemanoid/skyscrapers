@@ -41,20 +41,12 @@ type
     CheckButton: TButton;
     AutoSolutionButton: TButton;
     MainMenu: TMainMenu;
-    OpenFieldDialog: TOpenDialog;
     MainMenuItemFile: TMenuItem;
-    OpenConditionMenuItem: TMenuItem;
     ClearButton: TButton;
     NewFieldButton: TButton;
-    SaveConditionMenuItem: TMenuItem;
-    SaveFieldMenuItem: TMenuItem;
-    OpenFieldMenuItem: TMenuItem;
     ExitMenuItem: TMenuItem;
-    SaveFieldDialog: TSaveDialog;
     DiffucaltyTrackBar: TTrackBar;
     DiffucaltyLabel: TLabel;
-    OpenConditionDialog: TOpenDialog;
-    SaveConditionDialog: TSaveDialog;
     N1: TMenuItem;
     HelpMenuItem: TMenuItem;
     AboutMenuItem: TMenuItem;
@@ -63,6 +55,10 @@ type
     GenerationLabel: TLabel;
     GenerationPanel: TPanel;
     ExitButton: TButton;
+    SaveGameMenuItem: TMenuItem;
+    SaveGameDialog: TSaveDialog;
+    LoadGameDialog: TOpenDialog;
+    LoadGameMenuItem: TMenuItem;
     procedure FormCreate (Sender: TObject);  //инициализация переменных
     procedure DrawUnit (UnitNumber, Row, Col: shortint); //отрисовка небоскрёба
     procedure DrawEmptyField; //отрисовка пустого поля
@@ -76,22 +72,20 @@ type
     procedure CheckButtonClick(Sender: TObject); 
     procedure AutoSolutionButtonClick(Sender: TObject);
     procedure SetUnit (var UnitsArray: TUnitsArray; Value, Row, Col: shortint); //добавить небоскрёб в массив со значениями (не отрисовка)
-    procedure OpenConditionMenuItemClick(Sender: TObject);
     procedure ClearButtonClick(Sender: TObject);
     procedure HideVisibilityUnit (UnitSide, UnitIndex: shortint); //убрать один из элементов из рамки с видимостями
     procedure ClearVisibilityBorder; //очистить рамку видимостей
     procedure ClearUnitsArray (var UnitsArray: TUnitsArray); //очистить массив со значениями небоскрёбов
     procedure ClearVisibilityArray; //очистить массив со значениями рамки видимостей
     procedure NewFieldButtonClick(Sender: TObject);
-    procedure SaveConditionMenuItemClick(Sender: TObject);
     procedure ExitMenuItemClick(Sender: TObject);
     procedure DiffucaltyTrackBarChange(Sender: TObject);
-    procedure SaveFieldMenuItemClick(Sender: TObject);
-    procedure OpenFieldMenuItemClick(Sender: TObject);
     procedure GenerationTimerTimer(Sender: TObject);
     procedure HelpMenuItemClick(Sender: TObject);
     procedure AboutMenuItemClick(Sender: TObject);
     procedure ExitButtonClick(Sender: TObject);
+    procedure SaveGameMenuItemClick(Sender: TObject);
+    procedure LoadGameMenuItemClick(Sender: TObject);
   private
     procedure StopTimer (ShowFullProgressBar: boolean); //остановить таймер (используется при генерации условия)
     procedure StartTimer; //запустить таймер (используется при генерации условия)
@@ -119,13 +113,17 @@ end;
 
 procedure TFieldForm.FormCreate(Sender: TObject);
 begin
-  //variables initializate
-  //all field objects initialization
   Application.HintPause:= 0; //to have a dynamic hint in DiffucaltyTrackBar
+  
   AutoSolutionButton.Enabled:= false;
   GenerationLabel.Visible:= false;
   GenerationProgressBar.Visible:= false;
-  FieldSize:= _MaxFieldSize;
+
+  LoadGameDialog.Filter:= Format ('Skyscraper file (*.%s)|*.%s', [FieldProcessing._SkyscraperFileExt, FieldProcessing._SkyscraperFileExt]);
+  LoadGameDialog.DefaultExt:= FieldProcessing._SkyscraperFileExt;
+  SaveGameDialog.DefaultExt:= FieldProcessing._SkyscraperFileExt;
+
+  FieldSize:= _MaxFieldSize; //we initialize all objects
   DrawEmptyField;
   ClearTheField;
   DrawVisibilityBorder;
@@ -354,27 +352,6 @@ begin
   AutoSolutionButton.Enabled:= false;
 end;
 
-procedure TFieldForm.OpenConditionMenuItemClick(Sender: TObject);
-var
-  TempVisibilityArray: TVisibilityArray;
-begin
-  if OpenConditionDialog.Execute then
-  begin
-    ClearVisibilityBorder;
-    ClearTheField;
-    FieldProcessing.ReadVisibilityArraysFromFile(VisibilityArray, FieldSize, OpenConditionDialog.FileName);
-    TempVisibilityArray:= VisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
-    FieldSizeSpinEdit.Value:= FieldSize;
-    ClearVisibilityBorder;
-    VisibilityArray:= TempVisibilityArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
-    DrawVisibilityBorder;
-    DrawEmptyField;
-    FieldProcessing.ResetPlacedVariantsArray (FieldSize);
-    FieldProcessing.ResetUnitsStatsArray (FieldSize);
-    AutoSolutionButton.Enabled:= true;
-  end;
-end;
-
 procedure TFieldForm.ClearButtonClick(Sender: TObject);
 begin
   DrawEmptyField;
@@ -394,12 +371,6 @@ begin
   AutoSolutionButton.Enabled:= true;
 end;
 
-procedure TFieldForm.SaveConditionMenuItemClick(Sender: TObject);
-begin
-  if SaveConditionDialog.Execute then
-    FieldProcessing.WriteVisibilityArraysToFile (VisibilityArray, FieldSize, SaveConditionDialog.FileName);
-end;
-
 procedure TFieldForm.ExitMenuItemClick(Sender: TObject);
 begin
   FieldForm.Close;
@@ -409,32 +380,6 @@ procedure TFieldForm.DiffucaltyTrackBarChange(Sender: TObject);
 begin
   Application.CancelHint;
   DiffucaltyTrackBar.Hint:= IntToStr (DiffucaltyTrackBar.Position);
-end;
-
-procedure TFieldForm.SaveFieldMenuItemClick(Sender: TObject);
-begin
-  if SaveFieldDialog.Execute then
-    FieldProcessing.WriteUnitsArrayToFile (UnitsArray, FieldSize, SaveFieldDialog.FileName);  
-end;
-
-procedure TFieldForm.OpenFieldMenuItemClick(Sender: TObject);
-var
-  TempUnitsArray: TUnitsArray;
-begin
-  if OpenFieldDialog.Execute then
-  begin
-    ClearTheField;
-    ClearVisibilityBorder;
-    FieldProcessing.ReadUnitsArrayFromFile (UnitsArray, FieldSize, OpenFieldDialog.FileName);
-    TempUnitsArray:= UnitsArray;    //hack because of clear part of FieldSizeSpinEdit OnChange event
-    FieldSizeSpinEdit.Value:= FieldSize;
-    UnitsArray:= TempUnitsArray; //hack because of clear part of FieldSizeSpinEdit OnChange event
-    DrawFieldFromUnitsArray;
-    DrawVisibilityBorder;
-    FieldProcessing.ResetPlacedVariantsArray (FieldSize);
-    FieldProcessing.ResetUnitsStatsArray (FieldSize);
-    AutoSolutionButton.Enabled:= false;
-  end; 
 end;
 
 procedure TFieldForm.FieldSizeSpinEditChange(Sender: TObject);
@@ -546,6 +491,32 @@ end;
 procedure TFieldForm.ExitButtonClick(Sender: TObject);
 begin
   FieldForm.Close;
+end;
+
+procedure TFieldForm.SaveGameMenuItemClick(Sender: TObject);
+begin
+  if SaveGameDialog.Execute then
+    FieldProcessing.SaveGameToFile (VisibilityArray, UnitsArray, FieldSize, SaveGameDialog.FileName);
+end;
+
+procedure TFieldForm.LoadGameMenuItemClick(Sender: TObject);
+var
+  TempUnitsArray: TUnitsArray;
+  TempVisibilityArray: TVisibilityArray;
+begin
+  if LoadGameDialog.Execute then
+  begin
+    ClearTheField;
+    ClearVisibilityBorder;
+    FieldProcessing.LoadGameFromFile(VisibilityArray, UnitsArray, FieldSize, LoadGameDialog.FileName);
+    TempUnitsArray:= UnitsArray;
+    TempVisibilityArray:= VisibilityArray;
+    FieldSizeSpinEdit.Value:= FieldSize;
+    UnitsArray:= TempUnitsArray;
+    VisibilityArray:= TempVisibilityArray;
+    DrawFieldFromUnitsArray;
+    DrawVisibilityBorder;
+  end;
 end;
 
 end.
